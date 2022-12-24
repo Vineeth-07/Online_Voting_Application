@@ -1,0 +1,19 @@
+{
+  "name": "online-voting-application",
+  "version": "1.0.0",
+  "description": "Online Voting Application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vineeth-07/Online_Voting_Application.git"
+  },
+  "author": "Vineeth",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Vineeth-07/Online_Voting_Application/issues"
+  },
+  "homepage": "https://github.com/Vineeth-07/Online_Voting_Application#readme"
+}
