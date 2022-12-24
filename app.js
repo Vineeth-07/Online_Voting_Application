@@ -3,15 +3,18 @@ var csrf = require("tiny-csrf");
 const app = express();
 const bodyParser = require("body-parser");
 var cookieParser = require("cookie-parser");
+const { Admin } = require("./models");
 const path = require("path");
 const passport = require("passport");
 const connectEnsureLogin = require("connect-ensure-login");
 const session = require("express-session");
 const LocalStrategy = require("passport-local");
 const bcrypt = require("bcrypt");
+const flash = require("connect-flash");
 app.use(bodyParser.json());
 
 const saltRounds = 10;
+
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser("shh! some secret string"));
 app.use(csrf("this_should_be_32_character_long", ["POST", "PUT", "DELETE"]));
@@ -19,7 +22,10 @@ app.use(csrf("this_should_be_32_character_long", ["POST", "PUT", "DELETE"]));
 app.set("view engine", "ejs");
 // eslint-disable-next-line no-undef
 app.use(express.static(path.join(__dirname, "public")));
-
+// eslint-disable-next-line no-undef
+app.set("views", path.join(__dirname, "views"));
+app.use(flash());
+app.use(cookieParser("Some secret String"));
 app.use(
   session({
     secret: "my-super-secret-key-21728172615261562",
@@ -28,6 +34,10 @@ app.use(
     },
   })
 );
+app.use(function (request, response, next) {
+  response.locals.messages = request.flash();
+  next();
+});
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -71,8 +81,6 @@ passport.deserializeUser((id, done) => {
     });
 });
 
-const { Admin } = require("./models");
-
 app.get("/", (request, response) => {
   response.render("index", {
     title: "Voting Application",
@@ -114,14 +122,12 @@ app.post("/admin", async (request, response) => {
     request.login(user, (err) => {
       if (err) {
         console.log(err);
+        response.redirect("/");
       }
       response.redirect("/");
     });
   } catch (error) {
-    request.flash(
-      "error",
-      "This mail already having account, try another mail!"
-    );
+    console.log(error);
     return response.redirect("/signup");
   }
 });
@@ -141,5 +147,14 @@ app.post(
     response.redirect("/");
   }
 );
+
+app.get("/signout", (request, response, next) => {
+  request.logout((error) => {
+    if (error) {
+      return next(error);
+    }
+    response.redirect("/");
+  });
+});
 
 module.exports = app;
