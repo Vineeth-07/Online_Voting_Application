@@ -26,23 +26,23 @@ describe("Voting application test suite", () => {
     }
   });
 
-  test("Signup user", async () => {
-    let result = await agent.get("/signup");
-    const csrfToken = extractCsrfToken(result);
-    result = await agent.post("/admin").send({
+  test("Sign up user", async () => {
+    let res = await agent.get("/signup");
+    const csrfToken = extractCsrfToken(res);
+    res = await agent.post("/admin").send({
       firstName: "Vineeth",
       lastName: "Dharna",
       email: "vineeth@test.com",
       password: "12345678",
       _csrf: csrfToken,
     });
-    expect(result.statusCode).toBe(302);
+    expect(res.statusCode).toBe(302);
   });
 
   test("Login user", async () => {
-    let result = await agent.get("/login");
-    expect(result.statusCode).toBe(200);
-    result = await agent.get("/index");
-    expect(result.statusCode).toBe(302);
+    let res = await agent.get("/login");
+    expect(res.statusCode).toBe(200);
+    res = await agent.get("/index");
+    expect(res.statusCode).toBe(302);
   });
 });

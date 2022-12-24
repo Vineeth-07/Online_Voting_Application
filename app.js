@@ -3,7 +3,7 @@ var csrf = require("tiny-csrf");
 const app = express();
 const bodyParser = require("body-parser");
 var cookieParser = require("cookie-parser");
-const { Admin } = require("./models");
+const { admin } = require("./models");
 const path = require("path");
 const passport = require("passport");
 const connectEnsureLogin = require("connect-ensure-login");
@@ -48,7 +48,8 @@ passport.use(
       passwordField: "password",
     },
     (username, password, done) => {
-      Admin.findOne({ where: { email: username } })
+      admin
+        .findOne({ where: { email: username } })
         .then(async function (user) {
           const result = await bcrypt.compare(password, user.password);
           if (result) {
@@ -72,7 +73,8 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-  Admin.findByPk(id)
+  admin
+    .findByPk(id)
     .then((user) => {
       done(null, user);
     })
@@ -113,7 +115,7 @@ app.post("/admin", async (request, response) => {
   console.log(hashedPwd);
 
   try {
-    const user = await Admin.create({
+    const user = await admin.create({
       firstName: request.body.firstName,
       lastName: request.body.lastName,
       email: request.body.email,
