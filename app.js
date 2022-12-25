@@ -3,7 +3,7 @@ var csrf = require("tiny-csrf");
 const app = express();
 const bodyParser = require("body-parser");
 var cookieParser = require("cookie-parser");
-const { admin } = require("./models");
+const { admin, election, question } = require("./models");
 const path = require("path");
 const passport = require("passport");
 const connectEnsureLogin = require("connect-ensure-login");
@@ -91,10 +91,15 @@ app.get("/", (request, response) => {
 });
 
 app.get("/signup", (request, response) => {
-  response.render("signup", {
-    title: "Signup",
-    csrfToken: request.csrfToken(),
-  });
+  try {
+    response.render("signup", {
+      title: "Signup",
+      csrfToken: request.csrfToken(),
+    });
+  } catch (error) {
+    console.log(error);
+    return response.redirect("/signup");
+  }
 });
 
 app.post("/admin", async (request, response) => {
@@ -126,7 +131,7 @@ app.post("/admin", async (request, response) => {
         console.log(err);
         response.redirect("/");
       }
-      response.redirect("/");
+      response.redirect("/election");
     });
   } catch (error) {
     console.log(error);
@@ -134,8 +139,37 @@ app.post("/admin", async (request, response) => {
   }
 });
 
+app.get(
+  "/election",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    const loggedInUser = request.user.id;
+    const listofelections = await election.getelections(request.user.id);
+    const user = await admin.findByPk(loggedInUser);
+    const userName = user.dataValues.firstName;
+    if (request.accepts("html")) {
+      response.render("election", {
+        title: "Elections page",
+        userName,
+        listofelections,
+        csrfToken: request.csrfToken(),
+      });
+    } else {
+      response.json({ userName, listofelections });
+    }
+  }
+);
+
 app.get("/login", (request, response) => {
-  response.render("login", { title: "Login", csrfToken: request.csrfToken() });
+  try {
+    response.render("login", {
+      title: "Login",
+      csrfToken: request.csrfToken(),
+    });
+  } catch (error) {
+    console.log(error);
+    return response.redirect("/login");
+  }
 });
 
 app.post(
@@ -146,7 +180,7 @@ app.post(
   }),
   function (request, response) {
     console.log(request.user);
-    response.redirect("/");
+    response.redirect("/election");
   }
 );
 
@@ -158,5 +192,69 @@ app.get("/signout", (request, response, next) => {
     response.redirect("/");
   });
 });
+
+app.get(
+  "/create",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    response.render("newelection", {
+      title: "Create election",
+      csrfToken: request.csrfToken(),
+    });
+  }
+);
+
+app.post(
+  "/election",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    try {
+      await election.addelection({
+        electionName: request.body.electionName,
+        publicurl: request.body.publicurl,
+        adminid: request.user.id,
+      });
+      return response.redirect("/election");
+    } catch (error) {
+      console.log(error);
+      return response.status(422).json(error);
+    }
+  }
+);
+
+app.get(
+  "/addquestion/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    if (request.user.case === "admins") {
+      response.render("addquestion", {
+        id: request.params.id,
+        csrfToken: request.csrfToken(),
+      });
+    }
+  }
+);
+
+app.post(
+  "/addquestion/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    if (request.user.case === "admins") {
+      try {
+        const question = await question.addquestion({
+          electionid: request.params.id,
+          questionname: request.body.questionname,
+          description: request.body.description,
+        });
+        return response.redirect(
+          `/displayelections/correspondingquestion/${request.params.id}/${question.id}/options`
+        );
+      } catch (error) {
+        console.log(error);
+        return response.status(422).json(error);
+      }
+    }
+  }
+);
 
 module.exports = app;
