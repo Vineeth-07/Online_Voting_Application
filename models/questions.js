@@ -1,24 +1,23 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class question extends Model {
-    static countquestions(electionid) {
+  class questions extends Model {
+    static countquestions(electionID) {
       return this.count({
         where: {
-          electionid,
+          electionID,
         },
       });
     }
 
-    static addquestion({ questionname, description, electionid }) {
+    static addquestion({ questionname, description, electionID }) {
       return this.create({
         questionname,
         description,
-        electionid,
+        electionID,
       });
     }
-
-    static getquestion(id) {
+    static retrievequestion(id) {
       return this.findOne({
         where: {
           id,
@@ -26,16 +25,14 @@ module.exports = (sequelize, DataTypes) => {
         order: [["id", "ASC"]],
       });
     }
-
-    static deletequestion(id) {
+    static removequestion(id) {
       return this.destroy({
         where: {
           id,
         },
       });
     }
-
-    static editquestion(questionname, desctiption, questionid) {
+    static modifyquestion(questionname, desctiption, questionID) {
       return this.update(
         {
           questionname: questionname,
@@ -43,36 +40,46 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
           where: {
-            id: questionid,
+            id: questionID,
           },
         }
       );
     }
-
-    static getallquestions(electionid) {
+    static retrievequestions(electionID) {
       return this.findAll({
         where: {
-          electionid,
+          electionID,
         },
         order: [["id", "ASC"]],
       });
     }
 
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
     static associate(models) {
-      question.belongsTo(models.election, {
-        foreignKey: "electionid",
+      questions.belongsTo(models.Election, {
+        foreignKey: "electionID",
+      });
+
+      questions.hasMany(models.options, {
+        foreignKey: "questionID",
       });
     }
+    // define association here
   }
-  question.init(
+
+  questions.init(
     {
       questionname: DataTypes.STRING,
       description: DataTypes.STRING,
     },
     {
       sequelize,
-      modelName: "question",
+      modelName: "questions",
     }
   );
-  return question;
+  return questions;
 };

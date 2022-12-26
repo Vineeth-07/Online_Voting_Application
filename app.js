@@ -3,7 +3,7 @@ var csrf = require("tiny-csrf");
 const app = express();
 const bodyParser = require("body-parser");
 var cookieParser = require("cookie-parser");
-const { admin, election, question } = require("./models");
+const { Admin, Election, questions } = require("./models");
 const path = require("path");
 const passport = require("passport");
 const connectEnsureLogin = require("connect-ensure-login");
@@ -48,8 +48,7 @@ passport.use(
       passwordField: "password",
     },
     (username, password, done) => {
-      admin
-        .findOne({ where: { email: username } })
+      Admin.findOne({ where: { email: username } })
         .then(async function (user) {
           const result = await bcrypt.compare(password, user.password);
           if (result) {
@@ -73,8 +72,7 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-  admin
-    .findByPk(id)
+  Admin.findByPk(id)
     .then((user) => {
       done(null, user);
     })
@@ -120,7 +118,7 @@ app.post("/admin", async (request, response) => {
   console.log(hashedPwd);
 
   try {
-    const user = await admin.create({
+    const user = await Admin.create({
       firstName: request.body.firstName,
       lastName: request.body.lastName,
       email: request.body.email,
@@ -144,8 +142,8 @@ app.get(
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
     const loggedInUser = request.user.id;
-    const listofelections = await election.getelections(request.user.id);
-    const user = await admin.findByPk(loggedInUser);
+    const listofelections = await Election.getElections(request.user.id);
+    const user = await Admin.findByPk(loggedInUser);
     const userName = user.dataValues.firstName;
     if (request.accepts("html")) {
       response.render("election", {
@@ -209,10 +207,10 @@ app.post(
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
     try {
-      await election.addelection({
+      await Election.addElections({
         electionName: request.body.electionName,
         publicurl: request.body.publicurl,
-        adminid: request.user.id,
+        adminID: request.user.id,
       });
       return response.redirect("/election");
     } catch (error) {
@@ -223,36 +221,69 @@ app.post(
 );
 
 app.get(
-  "/addquestion/:id",
+  "/electionslist/:id",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
-    if (request.user.case === "admins") {
-      response.render("addquestion", {
+    try {
+      //const voter = await Voters.retrivevoters(request.params.id);
+      const question = await questions.retrievequestion(request.params.id);
+      const election = await Election.findByPk(request.params.id);
+      // eslint-disable-next-line no-unused-vars
+      const electionname = await Election.getElections(
+        request.params.id,
+        request.user.id
+      );
+      const countofquestions = await questions.countquestions(
+        request.params.id
+      );
+      //const countofvoters = await Voters.countvoters(request.params.id);
+      response.render("electionquestion", {
+        election: election,
+        publicurl: election.publicurl,
+        //voters: voter,
+        questions: question,
         id: request.params.id,
-        csrfToken: request.csrfToken(),
+        title: election.electionName,
+        countquestions: countofquestions,
+        // countvoters: countofvoters,
       });
+    } catch (error) {
+      console.log(error);
+      return response.status(422).json(error);
     }
   }
 );
 
-app.post(
-  "/addquestion/:id",
+app.get(
+  "/question/:id",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
-    if (request.user.case === "admins") {
-      try {
-        const question = await question.addquestion({
-          electionid: request.params.id,
-          questionname: request.body.questionname,
-          description: request.body.description,
-        });
-        return response.redirect(
-          `/displayelections/correspondingquestion/${request.params.id}/${question.id}/options`
-        );
-      } catch (error) {
-        console.log(error);
-        return response.status(422).json(error);
-      }
+    // eslint-disable-next-line no-unused-vars
+    const electionlist = await Election.getElections(
+      request.params.id,
+      request.user.id
+    );
+    const questions1 = await questions.retrievequestions(request.params.id);
+    const election = await Election.findByPk(request.params.id);
+    if (election.launched) {
+      request.flash(
+        "error",
+        "Can not modify question while election is running!!"
+      );
+      return response.redirect(`/electionslist/${request.params.id}`);
+    }
+    if (request.accepts("html")) {
+      response.render("question", {
+        title: election.electionName,
+        id: request.params.id,
+        questions: questions1,
+        election: election,
+        csrfToken: request.csrfToken(),
+      });
+    } else {
+      return response.json({
+        questions1,
+      });
     }
   }
 );

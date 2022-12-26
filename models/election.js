@@ -1,24 +1,27 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class election extends Model {
-    static addelection({ electionName, adminid, publicurl }) {
+  class Election extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static addElections({ electionName, adminID, publicurl }) {
       return this.create({
         electionName,
         publicurl,
-        adminid,
+        adminID,
       });
     }
-
-    static getpublicurl(publicurl) {
+    static getPublicurl(publicurl) {
       return this.findOne({
         where: {
           publicurl,
         },
       });
     }
-
-    static getelectionurl(publicurl) {
+    static getElectionurl(publicurl) {
       return this.findOne({
         where: {
           publicurl,
@@ -27,19 +30,18 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
 
-    static getelection(adminid) {
+    static getElection(adminID) {
       return this.findOne({
         where: {
-          adminid,
+          adminID,
         },
         order: [["id", "ASC"]],
       });
     }
-
-    static getelections(adminid) {
+    static getElections(adminID) {
       return this.findAll({
         where: {
-          adminid,
+          adminID,
         },
         order: [["id", "ASC"]],
       });
@@ -57,9 +59,8 @@ module.exports = (sequelize, DataTypes) => {
         }
       );
     }
-
     static end(id) {
-      return this.election.update(
+      return this.Election.update(
         {
           ended: true,
         },
@@ -72,15 +73,16 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     static associate(models) {
-      election.belongsTo(models.admin, {
-        foreignKey: "adminid",
+      // define association here
+      Election.belongsTo(models.Admin, {
+        foreignKey: "adminID",
       });
-      election.hasMany(models.question, {
-        foreignKey: "electionid",
+      Election.hasMany(models.questions, {
+        foreignKey: "electionID",
       });
     }
   }
-  election.init(
+  Election.init(
     {
       electionName: DataTypes.STRING,
       launched: DataTypes.BOOLEAN,
@@ -89,8 +91,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "election",
+      modelName: "Election",
     }
   );
-  return election;
+  return Election;
 };

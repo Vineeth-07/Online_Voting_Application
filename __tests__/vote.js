@@ -45,4 +45,26 @@ describe("Voting application test suite", () => {
     res = await agent.get("/index");
     expect(res.statusCode).toBe(302);
   });
+
+  test("Signout user", async () => {
+    let res = await agent.get("/election");
+    expect(res.statusCode).toBe(200);
+    res = await agent.get("/signout");
+    expect(res.statusCode).toBe(302);
+    res = await agent.get("/election");
+    expect(res.statusCode).toBe(302);
+  });
+
+  // test("Create election", async () => {
+  //   const agent = request.agent(server);
+  //   await login(agent, "vineeth@test.com", "12345678");
+  //   const res = await agent.get("/create");
+  //   const csrfToken = extractCsrfToken(res);
+  //   const response = await agent.post("/election").send({
+  //     electionName: "Class CR",
+  //     publicurl: "test",
+  //     _csrf: csrfToken,
+  //   });
+  //   expect(response.statusCode).toBe(302);
+  // });
 });
