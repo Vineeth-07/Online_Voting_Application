@@ -391,4 +391,51 @@ app.post(
   }
 );
 
+app.delete(
+  "/:id/deleteoptions",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    try {
+      const res = await options.removeoptions(request.params.id);
+      return response.json({ success: res === 1 });
+    } catch (error) {
+      console.log(error);
+      return response.status(422).json(error);
+    }
+  }
+);
+app.get(
+  "/elections/:electionID/questions/:questionID/modify",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    const adminID = request.user.id;
+    const admin = await Admin.findByPk(adminID);
+    const election = await Election.findByPk(request.params.electionID);
+    const Question = await questions.findByPk(request.params.questionID);
+    response.render("editquestion", {
+      username: admin.name,
+      election: election,
+      question: Question,
+      csrf: request.csrfToken(),
+    });
+  }
+);
+app.post(
+  "/elections/:electionID/questions/:questionID/modify",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    try {
+      await questions.modifyquestion(
+        request.body.questionname,
+        request.body.description,
+        request.params.questionID
+      );
+      response.redirect(`/question/${request.params.electionID}`);
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  }
+);
+
 module.exports = app;
