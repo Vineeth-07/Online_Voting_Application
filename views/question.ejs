@@ -24,7 +24,7 @@
     </script>
     <title><%= title %></title>
 </head>
-<body style="background-color: cornsilk;">
+<body style="background-color: rgb(182, 247, 217);">
             <div class="grid grid-cols-6">
                 <div class="col-start-3 col-span-2">
                 <b>
@@ -34,12 +34,11 @@
             </div>
             <b>
             <div class="bg-black-600 px-3 py-1 hover:bgblack-600">
-                <a href="/questionscreate/<%= id %>" class="text-black-600">create a new question</a>
-            </div>
-        </b>
-        <b>
-            <div>
-                 <a href="/electionslist/<%=id%>" class="text-black-600">GO BACK</a>
+                <a href="/questionscreate/<%= id %>" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2 justify-right">Create Question</a>
+            
+        &nbsp&nbsp
+       
+                 <a href="/electionslist/<%=id%>" class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-5 py-2 justify-right">Go Back</a>
             </div>
         </b>
         </div>

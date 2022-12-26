@@ -3,7 +3,7 @@ var csrf = require("tiny-csrf");
 const app = express();
 const bodyParser = require("body-parser");
 var cookieParser = require("cookie-parser");
-const { Admin, Election, questions } = require("./models");
+const { Admin, Election, questions, options } = require("./models");
 const path = require("path");
 const passport = require("passport");
 const connectEnsureLogin = require("connect-ensure-login");
@@ -284,6 +284,109 @@ app.get(
       return response.json({
         questions1,
       });
+    }
+  }
+);
+
+app.get(
+  "/questionscreate/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    response.render("questioncreate", {
+      id: request.params.id,
+      csrfToken: request.csrfToken(),
+    });
+  }
+);
+
+app.post(
+  "/questionscreate/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    if (!request.body.questionname) {
+      request.flash("error", "Question can not be empty!!");
+      return response.redirect(`/questionscreate/${request.params.id}`);
+    }
+    try {
+      const question = await questions.addquestion({
+        electionID: request.params.id,
+        questionname: request.body.questionname,
+        description: request.body.description,
+      });
+      return response.redirect(
+        `/displayelections/correspondingquestion/${request.params.id}/${question.id}/options`
+      );
+    } catch (error) {
+      console.log(error);
+      return response.status(422).json(error);
+    }
+  }
+);
+
+app.get(
+  "/displayelections/correspondingquestion/:id/:questionID/options",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    try {
+      const question = await questions.retrievequestion(
+        request.params.questionID
+      );
+      const option = await options.retrieveoptions(request.params.questionID);
+      if (request.accepts("html")) {
+        response.render("addoptions", {
+          title: question.questionname,
+          description: question.description,
+          id: request.params.id,
+          questionID: request.params.questionID,
+          option,
+          csrfToken: request.csrfToken(),
+        });
+      } else {
+        return response.json({
+          option,
+        });
+      }
+    } catch (err) {
+      return response.status(422).json(err);
+    }
+  }
+);
+
+app.delete(
+  "/deletequestion/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    try {
+      const res = await questions.removequestion(request.params.id);
+      return response.json({ success: res === 1 });
+    } catch (error) {
+      console.log(error);
+      return response.status(422).json(error);
+    }
+  }
+);
+
+app.post(
+  "/displayelections/correspondingquestion/:id/:questionID/options",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    if (!request.body.optionname) {
+      request.flash("error", "Option can not be empty");
+      return response.redirect(
+        `/displayelections/correspondingquestion/${request.params.id}/${request.params.questionID}/options`
+      );
+    }
+    try {
+      await options.addoption({
+        optionname: request.body.optionname,
+        questionID: request.params.questionID,
+      });
+      return response.redirect(
+        `/displayelections/correspondingquestion/${request.params.id}/${request.params.questionID}/options/`
+      );
+    } catch (error) {
+      console.log(error);
+      return response.status(422).json(error);
     }
   }
 );
