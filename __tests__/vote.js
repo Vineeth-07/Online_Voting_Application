@@ -13,6 +13,7 @@ function extractCsrfToken(res) {
   return $("[name=_csrf]").val();
 }
 
+// eslint-disable-next-line no-unused-vars
 const login = async (agent, username, password) => {
   let res = await agent.get("/login");
   let csrfToken = extractCsrfToken(res);
@@ -56,12 +57,4 @@ describe("Voting application test suite", function () {
     res = await agent.get("/index");
     expect(res.statusCode).toBe(302);
   });
-  // test("Signout user", async () => {
-  //   let res = await agent.get("/elections");
-  //   expect(res.statusCode).toBe(200);
-  //   res = await agent.get("/signout");
-  //   expect(res.statusCode).toBe(302);
-  //   res = await agent.get("/elections");
-  //   expect(res.statusCode).toBe(302);
-  // });
 });
