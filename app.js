@@ -150,7 +150,7 @@ app.get("/", (request, response) => {
     }
   } else {
     response.render("index", {
-      title: "Welcom To Online Voting Platform",
+      title: "Online Voting Platform",
     });
   }
 });
@@ -214,14 +214,13 @@ app.post(
   async (request, response) => {
     if (request.user.case === "admins") {
       if (request.body.electionName.length === 0) {
-        request.flash("error", "election name can not be empty!!");
+        request.flash("error", "Election name can't be empty!");
         return response.redirect("/create");
       }
       if (request.body.publicurl.length === 0) {
-        request.flash("error", "public url can not be empty!!");
+        request.flash("error", "Public url can't be empty!");
         return response.redirect("/create");
       }
-
       try {
         await Election.addElections({
           electionName: request.body.electionName,
@@ -230,8 +229,8 @@ app.post(
         });
         return response.redirect("/elections");
       } catch (error) {
-        console.log(error);
-        return response.status(422).json(error);
+        request.flash("error", "This URL already taken try with another!");
+        return response.redirect("/create");
       }
     } else if (request.user.role === "voter") {
       return response.redirect("/");
@@ -264,26 +263,26 @@ app.get("/login", (request, response) => {
     return response.redirect("/elections");
   }
   response.render("login", {
-    title: "Login to your admin account",
+    title: "Login Admin",
     csrfToken: request.csrfToken(),
   });
 });
 
 app.post("/admin", async (request, response) => {
   if (request.body.email.length == 0) {
-    request.flash("error", "email can not be empty!!");
+    request.flash("error", "Email can't be empty!");
     return response.redirect("/signup");
   }
   if (request.body.firstName.length == 0) {
-    request.flash("error", "firstname can not be empty!!");
+    request.flash("error", "Firstname can't be empty!");
     return response.redirect("/signup");
   }
   if (request.body.password.length == 0) {
-    request.flash("error", "password can not be empty!!");
+    request.flash("error", "Password can't be empty!");
     return response.redirect("/signup");
   }
   if (request.body.password.length <= 5) {
-    request.flash("error", "password length should be minimum of length 6!!");
+    request.flash("error", "Password length should be minimum of length 6!");
     return response.redirect("/signup");
   }
   const hashedPwd = await bcrypt.hash(request.body.password, saltRounds);
@@ -304,7 +303,7 @@ app.post("/admin", async (request, response) => {
     });
   } catch (error) {
     console.log(error);
-    request.flash("error", "User Already Exist with this mail!!");
+    request.flash("error", "User Already Exist with this mail!");
     return response.redirect("/signup");
   }
 });
@@ -358,7 +357,7 @@ app.get(
       if (election.launched) {
         request.flash(
           "error",
-          "Can not modify question while election is running!!"
+          "Can not modify question while election is running!"
         );
         return response.redirect(`/listofelections/${request.params.id}`);
       }
@@ -397,7 +396,7 @@ app.post(
   async (request, response) => {
     if (request.user.case === "admins") {
       if (!request.body.questionname) {
-        request.flash("error", "Question can not be empty!!");
+        request.flash("error", "Question can't be empty!");
         return response.redirect(`/questionscreate/${request.params.id}`);
       }
       try {
@@ -470,7 +469,7 @@ app.post(
   async (request, response) => {
     if (request.user.case === "admins") {
       if (!request.body.optionname) {
-        request.flash("error", "Option can not be empty");
+        request.flash("error", "Option can't be empty!");
         return response.redirect(
           `/displayelections/correspondingquestion/${request.params.id}/${request.params.questionID}/options`
         );
@@ -536,6 +535,46 @@ app.post(
           request.params.questionID
         );
         response.redirect(`/questions/${request.params.electionID}`);
+      } catch (error) {
+        console.log(error);
+        return;
+      }
+    }
+  }
+);
+app.get(
+  "/elections/:electionID/questions/:questionID/options/:optionID/modify",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    if (request.user.case === "admins") {
+      const adminID = request.user.id;
+      const admin = await Admin.findByPk(adminID);
+      const election = await Election.findByPk(request.params.electionID);
+      const Question = await questions.findByPk(request.params.questionID);
+      const option = await options.findByPk(request.params.optionID);
+      response.render("editoption", {
+        username: admin.name,
+        election: election,
+        question: Question,
+        option: option,
+        csrf: request.csrfToken(),
+      });
+    }
+  }
+);
+app.post(
+  "/elections/:electionID/questions/:questionID/options/:optionID/modify",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    if (request.user.case === "admins") {
+      try {
+        await options.modifyoption(
+          request.body.optionname,
+          request.params.optionID
+        );
+        response.redirect(
+          `/displayelections/correspondingquestion/${request.params.electionID}/${request.params.questionID}/options`
+        );
       } catch (error) {
         console.log(error);
         return;

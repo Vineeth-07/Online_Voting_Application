@@ -34,11 +34,9 @@
             </div>
             <b>
             <div class="bg-black-600 px-3 py-1 hover:bgblack-600">
-                <a href="/questionscreate/<%= id %>" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2 justify-right">Create Question</a>
-            
+                <a href="/listofelections/<%=id%>" class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-5 py-2 justify-right">Go Back</a>
         &nbsp&nbsp
-       
-                 <a href="/listofelections/<%=id%>" class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-5 py-2 justify-right">Go Back</a>
+        <a href="/questionscreate/<%= id %>" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2 justify-right">Create Question</a>
             </div>
         </b>
         </div>
@@ -47,7 +45,7 @@
                 <div class="grid grid-cols-6">
                     <div class="col-start-3 col-span-2">
                         <b>
-                <p class="text-black-600"><%= (questions.length==0)?"You did not added any questions !!":"" %></p>
+                <p class="text-black-600"><%= (questions.length==0)?"No questions yet!":"" %></p>
                         </b>
                 <ol class="list-decimal" type="1">
                     <% for (let i=0; i<questions.length; i++) { %>
@@ -62,11 +60,11 @@
                                 <div class="flex gap-2 text-600" align="center">
                                     <div class="rounded w-fit px-2 py-1 flex gap-2 cursor-pointer hover:text-600">
         
-                                        <a href="/elections/<%=election.id%>/questions/<%=questions[i].id%>/modify" class="text-sm">edit question</a>
+                                        <a href="/elections/<%=election.id%>/questions/<%=questions[i].id%>/modify" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-3 py-1.5 justify-right">Edit </a>
                                     </div>
                                      <% if((questions.length) >1) {%> 
                                     <div class="rounded w-fit px-2 py-1 flex gap-2 cursor-pointer hover:text-600">    
-                                        <a onclick="removequestion(<%= questions[i].id %>)" class="text-sm">delete question</a>
+                                        <a onclick="removequestion(<%= questions[i].id %>)" class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-3 py-1.5 justify-right">Delete</a>
                                          <%} %>
                                        
                                     </div>
