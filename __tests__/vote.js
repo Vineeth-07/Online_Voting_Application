@@ -51,11 +51,12 @@ describe("Voting application test suite", function () {
     expect(res.statusCode).toBe(302);
   });
 
-  test("Login user", async () => {
-    let res = await agent.get("/login");
+  test("User login", async () => {
+    res = await agent.get("/elections");
     expect(res.statusCode).toBe(200);
-    res = await agent.get("/index");
-    expect(res.statusCode).toBe(302);
+    await login(agent, "vineeth@test.com", "12345678");
+    res = await agent.get("/elections");
+    expect(res.statusCode).toBe(200);
   });
 
   test("Signout user", async () => {
