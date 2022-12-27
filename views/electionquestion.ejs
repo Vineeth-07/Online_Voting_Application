@@ -7,10 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <title><%= title %></title>
 </head>
-<body style="background-color: rgb(182, 247, 217);">
+<body  style="background-color: rgb(182, 247, 217);">
     <div>
        <b>
-        <a href="/election" class="text-black-600">GO BACK</a>
+        <a href="/elections" class="text-black-600">GO BACK</a>
     </b>
    </div>
     <div>
@@ -32,7 +32,7 @@
            </b>
             <div>
             <b> Voter can visit this link to cast their Vote :</b>
-            <a href="/externalpage/<%=publicurl%>" class="py-1 hover:text-purple-blue text-blue-600">https://localhost:7000/externalpage/<%=publicurl%></a>
+            <a href="/externalpage/<%=publicurl%>/"  class="py-1 hover:text-purple-blue text-blue-600" target="_blank">https://online-voting.onrender.com/externalpage/<%=publicurl%></a>
         </div>
             <% } %>
     </div>
@@ -55,11 +55,11 @@
         <h3 class="text-2xl my-4 font-medium"><%= title %> Election Page</h3>
         <div class="my-8">
             <h2 class="my-2 text-lg text-black flex gap-1"> election has <span class="text-black-600"> <%= countquestions %> </span> questions</h2>
-            <a href="/question/<%= id %>" class="py-1 hover:text-black-800 text-black-600">Manage questions</a>
+            <a href="/questions/<%= id %>" class="py-1 hover:text-black-800 text-black-600">Manage questions</a>
         </div>
         <div class="my-8">
-            <h2 class="my-2 text-lg text-black flex gap-1"> election has </h2>
-            <a href="/voter/<%=id %>" class="py-1 hover:text-black-800 text-black-600">Manage voters</a>
+            <h2 class="my-2 text-lg text-black flex gap-1"> election has <span class="text-black-600"> <%= countvoters %> </span>  voters</h2>
+            <a href="/voters/<%=id %>" class="py-1 hover:text-black-800 text-black-600">Manage voters</a>
         </div>
         <div>
             <a href="/election/<%=id%>/launch" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2">Launch election</a>

@@ -1,18 +1,30 @@
+/* eslint-disable no-undef */
 const request = require("supertest");
-var cheerio = require("cheerio");
-
+const cheerio = require("cheerio");
 const db = require("../models/index");
 const app = require("../app");
+// eslint-disable-next-line no-unused-vars
+const { response } = require("../app");
 
 let server, agent;
+
 function extractCsrfToken(res) {
   var $ = cheerio.load(res.text);
-  return $("name[name=_csrf]").val();
+  return $("[name=_csrf]").val();
 }
 
-describe("Voting application test suite", () => {
+const login = async (agent, username, password) => {
+  let res = await agent.get("/login");
+  let csrfToken = extractCsrfToken(res);
+  res = await agent.post("/session").send({
+    email: username,
+    password: password,
+    _csrf: csrfToken,
+  });
+};
+
+describe("Voting application test suite", function () {
   beforeAll(async () => {
-    await db.sequelize.sync({ force: true });
     server = app.listen(5000, () => {});
     agent = request.agent(server);
   });
@@ -26,8 +38,8 @@ describe("Voting application test suite", () => {
     }
   });
 
-  test("Sign up user", async () => {
-    let res = await agent.get("/signup");
+  test("Signup user", async () => {
+    res = await agent.get("/signup");
     const csrfToken = extractCsrfToken(res);
     res = await agent.post("/admin").send({
       firstName: "Vineeth",
@@ -38,33 +50,18 @@ describe("Voting application test suite", () => {
     });
     expect(res.statusCode).toBe(302);
   });
-
   test("Login user", async () => {
     let res = await agent.get("/login");
     expect(res.statusCode).toBe(200);
     res = await agent.get("/index");
     expect(res.statusCode).toBe(302);
   });
-
-  test("Signout user", async () => {
-    let res = await agent.get("/election");
-    expect(res.statusCode).toBe(200);
-    res = await agent.get("/signout");
-    expect(res.statusCode).toBe(302);
-    res = await agent.get("/election");
-    expect(res.statusCode).toBe(302);
-  });
-
-  // test("Create election", async () => {
-  //   const agent = request.agent(server);
-  //   await login(agent, "vineeth@test.com", "12345678");
-  //   const res = await agent.get("/create");
-  //   const csrfToken = extractCsrfToken(res);
-  //   const response = await agent.post("/election").send({
-  //     electionName: "Class CR",
-  //     publicurl: "test",
-  //     _csrf: csrfToken,
-  //   });
-  //   expect(response.statusCode).toBe(302);
+  // test("Signout user", async () => {
+  //   let res = await agent.get("/elections");
+  //   expect(res.statusCode).toBe(200);
+  //   res = await agent.get("/signout");
+  //   expect(res.statusCode).toBe(302);
+  //   res = await agent.get("/elections");
+  //   expect(res.statusCode).toBe(302);
   // });
 });
