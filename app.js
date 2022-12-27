@@ -582,5 +582,262 @@ app.post(
     }
   }
 );
+app.get(
+  "/voters/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    if (request.user.case === "admins") {
+      // eslint-disable-next-line no-unused-vars
+      const electionlist = await Election.getElections(
+        request.params.id,
+        request.user.id
+      );
+      const voterlist = await Voters.retrivevoters(request.params.id);
+      const election = await Election.findByPk(request.params.id);
+      if (request.accepts("html")) {
+        response.render("voters", {
+          title: election.electionName,
+          id: request.params.id,
+          voters: voterlist,
+          election: election,
+          csrfToken: request.csrfToken(),
+        });
+      } else {
+        return response.json({
+          voterlist,
+        });
+      }
+    }
+  }
+);
+app.get("/voters/listofelections/:id", async (request, response) => {
+  if (request.user.case === "admins") {
+    try {
+      const electionname = await Election.getElections(
+        request.params.id,
+        request.user.id
+      );
+      const countofquestions = await questions.countquestions(
+        request.params.id
+      );
+      const countofvoters = await Voters.countvoters(request.params.id);
+      const election = await Election.findByPk(request.params.id);
+      response.render("eletionquestion", {
+        publicurl: election.publicurl,
+        election: election,
+        id: request.params.id,
+        title: electionname.electionName,
+        countquestions: countofquestions,
+        countvoters: countofvoters,
+      });
+    } catch (error) {
+      console.log(error);
+      return response.status(422).json(error);
+    }
+  }
+});
+app.get("/elections/listofelections/:id", async (request, response) => {
+  if (request.user.case === "admins") {
+    try {
+      const election = await Election.getElections(
+        request.params.id,
+        request.user.id
+      );
+      const ele = await Election.findByPk(request.params.id);
+      const countofquestions = await questions.countquestions(
+        request.params.id
+      );
+      const countofvoters = await Voters.countvoters(request.params.id);
+      response.render("electionquestion", {
+        id: request.params.id,
+        publicurl: ele.publicurl,
+        title: election.electionName,
+        election: election,
+        countquestions: countofquestions,
+        countvoters: countofvoters,
+      });
+    } catch (error) {
+      console.log(error);
+      return response.status(422).json(error);
+    }
+  }
+});
+
+app.get(
+  "/createvoter/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    if (request.user.case === "admins") {
+      const voterslist = await Voters.retrivevoters(request.params.id);
+      if (request.accepts("html")) {
+        response.render("votercreate", {
+          id: request.params.id,
+          csrfToken: request.csrfToken({ voterslist }),
+        });
+      } else {
+        return response.json({ voterslist });
+      }
+    }
+  }
+);
+
+app.post(
+  "/createvoter/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    if (request.user.case === "admins") {
+      if (request.body.voterid.length == 0) {
+        request.flash("error", "Voter ID Can not be null!!");
+        return response.redirect(`/createvoter/${request.params.id}`);
+      }
+      if (request.body.password.length == 0) {
+        request.flash("error", "Password can not be empty!!");
+        return response.redirect(`/createvoter/${request.params.id}`);
+      }
+      if (request.body.password.length < 3) {
+        request.flash("error", "Password length can not be less than three!!");
+        return response.redirect(`/createvoter/${request.params.id}`);
+      }
+      const hashedPwd = await bcrypt.hash(request.body.password, saltRounds);
+      try {
+        await Voters.add(request.body.voterid, hashedPwd, request.params.id);
+        return response.redirect(`/voters/${request.params.id}`);
+      } catch (error) {
+        console.log(error);
+        return response.status(422).json(error);
+      }
+    }
+  }
+);
+
+app.get(
+  "/elections/:electionID/voter/:voterID/edit",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    if (request.user.case === "admins") {
+      const election = await Election.findByPk(request.params.electionID);
+      const voter = await Voters.findByPk(request.params.voterID);
+      response.render("editvoters", {
+        election: election,
+        voter: voter,
+        csrf: request.csrfToken(),
+      });
+    }
+  }
+);
+
+app.post(
+  "/elections/:electionID/voter/:voterID/modify",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    if (request.user.case === "admins") {
+      try {
+        await Voters.modifypassword(
+          request.params.voterID,
+          request.body.Voterpassword
+        );
+        response.redirect(`/voters/${request.params.electionID}`);
+      } catch (error) {
+        console.log(error);
+        return;
+      }
+    }
+  }
+);
+
+app.delete(
+  "/:id/voterdelete",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    if (request.user.case === "admins") {
+      try {
+        const res = await Voters.delete(request.params.id);
+        return response.json({ success: res === 1 });
+      } catch (error) {
+        console.log(error);
+        return response.status(422).json(error);
+      }
+    }
+  }
+);
+
+app.get(
+  "/election/:id/launch",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    if (request.user.case === "admins") {
+      const question = await questions.findAll({
+        where: { electionID: request.params.id },
+      });
+      if (question.length <= 1) {
+        request.flash("error", "Add atleast two questions in the ballot!");
+        return response.redirect(`/listofelections/${request.params.id}`);
+      }
+
+      for (let i = 0; i < question.length; i++) {
+        const option = await options.retrieveoptions(question[i].id);
+        if (option.length <= 1) {
+          request.flash("error", "Add atleast two options to the question!");
+          return response.redirect(`/listofelections/${request.params.id}`);
+        }
+      }
+
+      const voters = await Voters.retrivevoters(request.params.id);
+      if (voters.length <= 1) {
+        request.flash("error", "Add atleast two voters to lauch election");
+        return response.redirect(`/listofelections/${request.params.id}`);
+      }
+
+      try {
+        await Election.launch(request.params.id);
+        return response.redirect(`/listofelections/${request.params.id}`);
+      } catch (error) {
+        console.log(error);
+        return response.send(error);
+      }
+    }
+  }
+);
+
+app.get(
+  "/election/:id/electionpreview",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    if (request.user.case === "admins") {
+      const election = await Election.findByPk(request.params.id);
+      const optionsnew = [];
+      const question = await questions.retrievequestions(request.params.id);
+
+      for (let i = 0; i < question.length; i++) {
+        const optionlist = await options.retrieveoptions(question[i].id);
+        optionsnew.push(optionlist);
+      }
+      if (election.launched) {
+        request.flash("error", "You can not preview election while Running");
+        return response.redirect(`/listofelections/${request.params.id}`);
+      }
+
+      response.render("previewelection", {
+        election: election,
+        questions: question,
+        options: optionsnew,
+        csrf: request.csrfToken(),
+      });
+    }
+  }
+);
+
+app.get("/externalpage/:publicurl", async (request, response) => {
+  try {
+    const election = await Election.getElectionurl(request.params.publicurl);
+    return response.render("voterlogin", {
+      publicurl: election.publicurl,
+      csrfToken: request.csrfToken(),
+    });
+  } catch (error) {
+    console.log(error);
+    return response.status(422).json(error);
+  }
+});
 
 module.exports = app;
