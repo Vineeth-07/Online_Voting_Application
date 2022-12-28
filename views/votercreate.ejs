@@ -7,37 +7,31 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <title>New Voter</title>
 </head>
-<body>
-    <div style="background-color: rgb(182, 247, 217);">
-    <div class="relative flex min-h-screen text-gray-800 antialiased flex-col justify-center overflow-hidden">
-        <div class="relative py-3 sm:w-96 mx-auto text-center">
-            <span class="text-2xl font-bold ">Add  New Voter</span>
-            <div>
-            </div>
-            <div class="mt-4 bg-white shadow-md rounded-lg text-left " style="background-color: skyblue">
-                <div class="h-2 rounded-t-md"></div>
-                <form action="/newvoter/<%= id %>" method="post" class="px-8 py-6">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                    <label for="voterid" class="block mt-3 font-semibold">New Voter ID</label>
-                    <input id="voterid" name="voterid" type="text" placeholder="voterid" class="border w-full h-5 px-3 py-5 mt-2 hover:outline-none focus:outline-none focus:ring-indigo-500 focus:ring-1 rounded-md" >
-                    <label for="password" class="block mt-3 font-semibold">Password</label>
-                    <input id="password" type="text"name="password"placeholder="password" class="border w-full h-5 px-3 py-5 mt-2 hover:outline-none focus:outline-none focus:ring-indigo-500 focus:ring-1 rounded-md" >
-                    <center>
-                    <button type="submit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-1 justify-right" >Add</button>
-                </center>
-                </form>
-            </div>
-        </div>
+
+<body style="background-color: rgb(182, 247, 217);;">
+    <div class="grid grid-cols-6">
+        <div class="col-start-3 col-span-2">
+            <span class="text-2xl font-dark ">Add New Voter</span>
+          <form action="/newvoter/<%= id %>" method="post">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="py-3">
+           <label for="voterid">Voter ID:</label>
+           <input id="voterid" name="voterid" type="text" placeholder="voterid" class="border border-gray-300 text-gray-900 rounded p-2 w-full">
+        </div>  
+        <div class="py-3"> 
+           <label for="password">Public URL:</label>
+           <input id="password" type="text"name="password"placeholder="password" class="border border-gray-300 text-gray-900 rounded p-2 w-full">
+        </div>  
+        <div class="py-3"> 
+           <button type="submit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2">Add</button>        
+        </div>  
+        </form>
         <% if(messages && messages.error && messages.error.length > 0)  { %>
             <% for(var i=0; i<messages.error.length; i++) { %>
-                   <div class="bg-red-300 text-red-900 p-2 rounded-lg shadow py-3">
-                    <center>
-                    <li> <%= messages.error[i] %></li>
-                </center>   
-                </div>
+              <p class="bg-red-200 my-3 list-none rounded px-4 py-2"><%= messages.error[i] %></p>
             <% } %>
-          <% } %>  
+          <% } %>
         </div>
     </div>
-</body>
+  </body>
 </html>

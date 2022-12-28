@@ -702,7 +702,8 @@ app.post(
         return response.redirect(`/voters/${request.params.id}`);
       } catch (error) {
         console.log(error);
-        return response.status(422).json(error);
+        request.flash("error", "VoterID already used, try another!");
+        return response.redirect(`/newvoter/${request.params.id}`);
       }
     }
   }

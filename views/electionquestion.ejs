@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./css/style.css" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <title><%= title %></title>
 </head>
@@ -26,28 +27,15 @@
             <b>
             <div class="bg-green-300 text-green-900 p-2 rounded-lg shadow">
                 <center>
-               Election is Live
+                Election is Live 
             </center>
             </div>
            </b>
             <div>
-            <b> Voter can visit this link to cast their Vote :</b>
-            <a href="/externalpage/<%=publicurl%>/"  class="py-1 hover:text-purple-blue text-blue-600" target="_blank">https://online-voting.onrender.com/externalpage/<%=publicurl%></a>
+            <b> Voter can visit this link to vote :</b>
+            <a href="/externalpage/<%=publicurl%>/"  class="py-1 hover:text-purple-blue text-blue-600" target="_blank">https://vineeth-voting-application.onrender.com/externalpage/<%=publicurl%></a>
         </div>
             <% } %>
-    </div>
-    <div>
-        <center>
-            <div>
-                <% if (messages && messages.error && messages.error.length > 0) { %>
-                    <% for(var i=0; i<messages.error.length; i++) { %>
-                        <b>
-                        <p class="bg-red-300 text-red-900 p-2 rounded-lg shadow"><%= messages.error[i] %></p>
-                        </b>
-                    <% } %>
-                <% } %>
-            </div>
-        </center>
     </div>
     </div>
     <div class="grid grid-cols-6">
@@ -79,6 +67,12 @@
         <a href="" class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-8 py-2"> End election</a>
     </div>
         </div>
+    </div>
     </table>
+    <p style=" position: absolute; bottom: 0; left: 0; width: 100%; text-align: center"> <% if(messages && messages.error && messages.error.length > 0)  { %>
+        <% for(var i=0; i<messages.error.length; i++) { %>
+          <p class="bg-red-200 my-3 list-none rounded px-4 py-2"><%= messages.error[i] %></p>
+        <% } %>
+      <% } %></p>
 </body>
 </html>

@@ -10,8 +10,8 @@
 <body style="background-color: rgb(182, 247, 217);">
     <div class="my-3 mx-6" >
         <div class="flex gap-2 py-4 justify-between">
-            <div><b><h5 class="text-xl">My Election List</h5></b></div>
-            <div><b><h5 class="text-xl">Welcome <%= userName %></h5></b>
+            <div><b><h4 class="text-xl">My Election List</h4></b></div>
+            <div><b><h4 class="text-xl font-bold">Welcome <%= userName %></h4></b>
         </div>  
             <div class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2">
                 <a href="/addquestion" class="text-white">Create Election</a>
@@ -20,7 +20,7 @@
                 <a href="/signout" > Signout</a>
             </div>
         </div>
-        <div class="flex-auto">
+        <div class="mt-4 bg-white shadow-md rounded-lg text-left" style="background-color: skyblue;">
             <%- include('electionslist.ejs') %>
         </div>
     </div>
