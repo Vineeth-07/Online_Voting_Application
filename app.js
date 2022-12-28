@@ -196,7 +196,7 @@ app.get(
   }
 );
 app.get(
-  "/create",
+  "/addquestion",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
     if (request.user.case === "admins") {
@@ -215,11 +215,11 @@ app.post(
     if (request.user.case === "admins") {
       if (request.body.electionName.length === 0) {
         request.flash("error", "Election name can't be empty!");
-        return response.redirect("/create");
+        return response.redirect("/addquestion");
       }
       if (request.body.publicurl.length === 0) {
         request.flash("error", "Public url can't be empty!");
-        return response.redirect("/create");
+        return response.redirect("/addquestion");
       }
       try {
         await Election.addElections({
@@ -230,7 +230,7 @@ app.post(
         return response.redirect("/elections");
       } catch (error) {
         request.flash("error", "This URL already taken try with another!");
-        return response.redirect("/create");
+        return response.redirect("/addquestion");
       }
     } else if (request.user.role === "voter") {
       return response.redirect("/");
@@ -308,13 +308,13 @@ app.post("/admin", async (request, response) => {
   }
 });
 app.get(
-  "/listofelections/:id",
+  "/electionslist/:id",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
     if (request.user.case === "admins") {
       try {
-        const voter = await Voters.retrivevoters(request.params.id);
-        const question = await questions.retrievequestion(request.params.id);
+        const voter = await Voters.getvoters(request.params.id);
+        const question = await questions.getquestion(request.params.id);
         const election = await Election.findByPk(request.params.id);
         // eslint-disable-next-line no-unused-vars
         const electionname = await Election.getElections(
@@ -352,14 +352,14 @@ app.get(
         request.params.id,
         request.user.id
       );
-      const questions1 = await questions.retrievequestions(request.params.id);
+      const questions1 = await questions.getquestions(request.params.id);
       const election = await Election.findByPk(request.params.id);
       if (election.launched) {
         request.flash(
           "error",
           "Can not modify question while election is running!"
         );
-        return response.redirect(`/listofelections/${request.params.id}`);
+        return response.redirect(`/electionslist/${request.params.id}`);
       }
       if (request.accepts("html")) {
         response.render("questions", {
@@ -378,7 +378,7 @@ app.get(
   }
 );
 app.get(
-  "/questionscreate/:id",
+  "/createquestions/:id",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
     if (request.user.case === "admins") {
@@ -391,13 +391,13 @@ app.get(
 );
 
 app.post(
-  "/questionscreate/:id",
+  "/createquestions/:id",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
     if (request.user.case === "admins") {
       if (!request.body.questionname) {
         request.flash("error", "Question can't be empty!");
-        return response.redirect(`/questionscreate/${request.params.id}`);
+        return response.redirect(`/createquestions/${request.params.id}`);
       }
       try {
         const question = await questions.addquestion({
@@ -406,7 +406,7 @@ app.post(
           description: request.body.description,
         });
         return response.redirect(
-          `/displayelections/correspondingquestion/${request.params.id}/${question.id}/options`
+          `/getelections/addoption/${request.params.id}/${question.id}/options`
         );
       } catch (error) {
         console.log(error);
@@ -417,14 +417,12 @@ app.post(
 );
 
 app.get(
-  "/displayelections/correspondingquestion/:id/:questionID/options",
+  "/getelections/addoption/:id/:questionID/options",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
     if (request.user.case === "admins") {
       try {
-        const question = await questions.retrievequestion(
-          request.params.questionID
-        );
+        const question = await questions.getquestion(request.params.questionID);
         const option = await options.retrieveoptions(request.params.questionID);
         if (request.accepts("html")) {
           response.render("addoption", {
@@ -453,7 +451,7 @@ app.delete(
   async (request, response) => {
     if (request.user.case === "admins") {
       try {
-        const res = await questions.removequestion(request.params.id);
+        const res = await questions.deletequestion(request.params.id);
         return response.json({ success: res === 1 });
       } catch (error) {
         console.log(error);
@@ -464,14 +462,14 @@ app.delete(
 );
 
 app.post(
-  "/displayelections/correspondingquestion/:id/:questionID/options",
+  "/getelections/addoption/:id/:questionID/options",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
     if (request.user.case === "admins") {
       if (!request.body.optionname) {
         request.flash("error", "Option can't be empty!");
         return response.redirect(
-          `/displayelections/correspondingquestion/${request.params.id}/${request.params.questionID}/options`
+          `/getelections/addoption/${request.params.id}/${request.params.questionID}/options`
         );
       }
       try {
@@ -480,7 +478,7 @@ app.post(
           questionID: request.params.questionID,
         });
         return response.redirect(
-          `/displayelections/correspondingquestion/${request.params.id}/${request.params.questionID}/options/`
+          `/getelections/addoption/${request.params.id}/${request.params.questionID}/options/`
         );
       } catch (error) {
         console.log(error);
@@ -496,7 +494,7 @@ app.delete(
   async (request, response) => {
     if (request.user.case === "admins") {
       try {
-        const res = await options.removeoptions(request.params.id);
+        const res = await options.deleteoptions(request.params.id);
         return response.json({ success: res === 1 });
       } catch (error) {
         console.log(error);
@@ -506,7 +504,7 @@ app.delete(
   }
 );
 app.get(
-  "/elections/:electionID/questions/:questionID/modify",
+  "/elections/:electionID/questions/:questionID/edit",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
     if (request.user.case === "admins") {
@@ -524,12 +522,12 @@ app.get(
   }
 );
 app.post(
-  "/elections/:electionID/questions/:questionID/modify",
+  "/elections/:electionID/questions/:questionID/edit",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
     if (request.user.case === "admins") {
       try {
-        await questions.modifyquestion(
+        await questions.editquestion(
           request.body.questionname,
           request.body.description,
           request.params.questionID
@@ -543,7 +541,7 @@ app.post(
   }
 );
 app.get(
-  "/elections/:electionID/questions/:questionID/options/:optionID/modify",
+  "/elections/:electionID/questions/:questionID/options/:optionID/edit",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
     if (request.user.case === "admins") {
@@ -563,17 +561,17 @@ app.get(
   }
 );
 app.post(
-  "/elections/:electionID/questions/:questionID/options/:optionID/modify",
+  "/elections/:electionID/questions/:questionID/options/:optionID/edit",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
     if (request.user.case === "admins") {
       try {
-        await options.modifyoption(
+        await options.editoption(
           request.body.optionname,
           request.params.optionID
         );
         response.redirect(
-          `/displayelections/correspondingquestion/${request.params.electionID}/${request.params.questionID}/options`
+          `/getelections/addoption/${request.params.electionID}/${request.params.questionID}/options`
         );
       } catch (error) {
         console.log(error);
@@ -592,7 +590,7 @@ app.get(
         request.params.id,
         request.user.id
       );
-      const voterlist = await Voters.retrivevoters(request.params.id);
+      const voterlist = await Voters.getvoters(request.params.id);
       const election = await Election.findByPk(request.params.id);
       if (request.accepts("html")) {
         response.render("voters", {
@@ -610,7 +608,7 @@ app.get(
     }
   }
 );
-app.get("/voters/listofelections/:id", async (request, response) => {
+app.get("/voters/electionslist/:id", async (request, response) => {
   if (request.user.case === "admins") {
     try {
       const electionname = await Election.getElections(
@@ -636,7 +634,7 @@ app.get("/voters/listofelections/:id", async (request, response) => {
     }
   }
 });
-app.get("/elections/listofelections/:id", async (request, response) => {
+app.get("/elections/electionslist/:id", async (request, response) => {
   if (request.user.case === "admins") {
     try {
       const election = await Election.getElections(
@@ -664,11 +662,11 @@ app.get("/elections/listofelections/:id", async (request, response) => {
 });
 
 app.get(
-  "/createvoter/:id",
+  "/newvoter/:id",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
     if (request.user.case === "admins") {
-      const voterslist = await Voters.retrivevoters(request.params.id);
+      const voterslist = await Voters.getvoters(request.params.id);
       if (request.accepts("html")) {
         response.render("votercreate", {
           id: request.params.id,
@@ -682,21 +680,21 @@ app.get(
 );
 
 app.post(
-  "/createvoter/:id",
+  "/newvoter/:id",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
     if (request.user.case === "admins") {
       if (request.body.voterid.length == 0) {
         request.flash("error", "Voter ID Can not be null!!");
-        return response.redirect(`/createvoter/${request.params.id}`);
+        return response.redirect(`/newvoter/${request.params.id}`);
       }
       if (request.body.password.length == 0) {
         request.flash("error", "Password can not be empty!!");
-        return response.redirect(`/createvoter/${request.params.id}`);
+        return response.redirect(`/newvoter/${request.params.id}`);
       }
       if (request.body.password.length < 3) {
         request.flash("error", "Password length can not be less than three!!");
-        return response.redirect(`/createvoter/${request.params.id}`);
+        return response.redirect(`/newvoter/${request.params.id}`);
       }
       const hashedPwd = await bcrypt.hash(request.body.password, saltRounds);
       try {
@@ -727,12 +725,12 @@ app.get(
 );
 
 app.post(
-  "/elections/:electionID/voter/:voterID/modify",
+  "/elections/:electionID/voter/:voterID/edit",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
     if (request.user.case === "admins") {
       try {
-        await Voters.modifypassword(
+        await Voters.editpassword(
           request.params.voterID,
           request.body.Voterpassword
         );
@@ -771,26 +769,26 @@ app.get(
       });
       if (question.length <= 1) {
         request.flash("error", "Add atleast two questions in the ballot!");
-        return response.redirect(`/listofelections/${request.params.id}`);
+        return response.redirect(`/electionslist/${request.params.id}`);
       }
 
       for (let i = 0; i < question.length; i++) {
         const option = await options.retrieveoptions(question[i].id);
         if (option.length <= 1) {
           request.flash("error", "Add atleast two options to the question!");
-          return response.redirect(`/listofelections/${request.params.id}`);
+          return response.redirect(`/electionslist/${request.params.id}`);
         }
       }
 
-      const voters = await Voters.retrivevoters(request.params.id);
+      const voters = await Voters.getvoters(request.params.id);
       if (voters.length <= 1) {
         request.flash("error", "Add atleast two voters to lauch election");
-        return response.redirect(`/listofelections/${request.params.id}`);
+        return response.redirect(`/electionslist/${request.params.id}`);
       }
 
       try {
         await Election.launch(request.params.id);
-        return response.redirect(`/listofelections/${request.params.id}`);
+        return response.redirect(`/electionslist/${request.params.id}`);
       } catch (error) {
         console.log(error);
         return response.send(error);
@@ -800,13 +798,13 @@ app.get(
 );
 
 app.get(
-  "/election/:id/electionpreview",
+  "/election/:id/previewelection",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
     if (request.user.case === "admins") {
       const election = await Election.findByPk(request.params.id);
       const optionsnew = [];
-      const question = await questions.retrievequestions(request.params.id);
+      const question = await questions.getquestions(request.params.id);
 
       for (let i = 0; i < question.length; i++) {
         const optionlist = await options.retrieveoptions(question[i].id);
@@ -814,7 +812,7 @@ app.get(
       }
       if (election.launched) {
         request.flash("error", "You can not preview election while Running");
-        return response.redirect(`/listofelections/${request.params.id}`);
+        return response.redirect(`/electionslist/${request.params.id}`);
       }
 
       response.render("previewelection", {

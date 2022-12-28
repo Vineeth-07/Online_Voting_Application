@@ -71,7 +71,7 @@ describe("Voting application test suite", function () {
   test("Creating  election", async () => {
     const agent = request.agent(server);
     await login(agent, "vineeth@test.com", "12345678");
-    const res = await agent.get("/create");
+    const res = await agent.get("/addquestion");
     const csrfToken = extractCsrfToken(res);
     const response = await agent.post("/elections").send({
       electionName: "vineeth",
@@ -85,7 +85,7 @@ describe("Voting application test suite", function () {
     const agent = request.agent(server);
     await login(agent, "vineeth@test.com", "12345678");
 
-    let res = await agent.get("/create");
+    let res = await agent.get("/addquestion");
     let csrfToken = extractCsrfToken(res);
     await agent.post("/elections").send({
       electionName: "Class CR",
@@ -100,9 +100,9 @@ describe("Voting application test suite", function () {
     const electionCount = parsedResponse.elections_list.length;
     const latestElection = parsedResponse.elections_list[electionCount - 1];
 
-    res = await agent.get(`/questionscreate/${latestElection.id}`);
+    res = await agent.get(`/createquestions/${latestElection.id}`);
     csrfToken = extractCsrfToken(res);
-    res = await agent.post(`/questionscreate/${latestElection.id}`).send({
+    res = await agent.post(`/createquestions/${latestElection.id}`).send({
       questionname: "Class GR",
       description: "Vote",
       _csrf: csrfToken,
@@ -114,7 +114,7 @@ describe("Voting application test suite", function () {
     const agent = request.agent(server);
     await login(agent, "vineeth@test.com", "12345678");
 
-    let res = await agent.get("/create");
+    let res = await agent.get("/addquestion");
     let csrfToken = extractCsrfToken(res);
     await agent.post("/elections").send({
       electionName: "Games",
@@ -128,17 +128,17 @@ describe("Voting application test suite", function () {
     const electionCount = parsedResponse.elections_list.length;
     const latestElection = parsedResponse.elections_list[electionCount - 1];
 
-    res = await agent.get(`/questionscreate/${latestElection.id}`);
+    res = await agent.get(`/createquestions/${latestElection.id}`);
     csrfToken = extractCsrfToken(res);
-    await agent.post(`/questionscreate/${latestElection.id}`).send({
+    await agent.post(`/createquestions/${latestElection.id}`).send({
       questionname: "Monitoring",
       description: "Boys",
       _csrf: csrfToken,
     });
 
-    res = await agent.get(`/questionscreate/${latestElection.id}`);
+    res = await agent.get(`/createquestions/${latestElection.id}`);
     csrfToken = extractCsrfToken(res);
-    await agent.post(`/questionscreate/${latestElection.id}`).send({
+    await agent.post(`/createquestions/${latestElection.id}`).send({
       question: "Best",
       description: "Fit",
       _csrf: csrfToken,

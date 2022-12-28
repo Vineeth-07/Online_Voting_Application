@@ -16,7 +16,7 @@
             </div>
             <div class="mt-4 bg-white shadow-md rounded-lg text-left " style="background-color: skyblue">
                 <div class="h-2 rounded-t-md"></div>
-                <form action="/createvoter/<%= id %>" method="post" class="px-8 py-6">
+                <form action="/newvoter/<%= id %>" method="post" class="px-8 py-6">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                     <label for="voterid" class="block mt-3 font-semibold">New Voter ID</label>
                     <input id="voterid" name="voterid" type="text" placeholder="voterid" class="border w-full h-5 px-3 py-5 mt-2 hover:outline-none focus:outline-none focus:ring-indigo-500 focus:ring-1 rounded-md" >

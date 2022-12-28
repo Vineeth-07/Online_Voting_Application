@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         electionID,
       });
     }
-    static retrievequestion(id) {
+    static getquestion(id) {
       return this.findOne({
         where: {
           id,
@@ -25,14 +25,14 @@ module.exports = (sequelize, DataTypes) => {
         order: [["id", "ASC"]],
       });
     }
-    static removequestion(id) {
+    static deletequestion(id) {
       return this.destroy({
         where: {
           id,
         },
       });
     }
-    static modifyquestion(questionname, desctiption, questionID) {
+    static editquestion(questionname, desctiption, questionID) {
       return this.update(
         {
           questionname: questionname,
@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       );
     }
-    static retrievequestions(electionID) {
+    static getquestions(electionID) {
       return this.findAll({
         where: {
           electionID,

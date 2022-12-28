@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
 
-    static modifypassword(voterid, password) {
+    static editpassword(voterid, password) {
       return this.update(
         {
           password: password,
@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
       );
     }
 
-    static retrivevoters(electionID) {
+    static getvoters(electionID) {
       return this.findAll({
         where: {
           electionID,

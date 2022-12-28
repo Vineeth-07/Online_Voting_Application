@@ -14,7 +14,7 @@
         </b>
           <form
             method="post"
-            action="/elections/<%= election.id %>/questions/<%= question.id %>/options/<%= option.id %>/modify"
+            action="/elections/<%= election.id %>/questions/<%= question.id %>/options/<%= option.id %>/edit"
             class="flex flex-col gap-4 pt-4">
             <input type="hidden" name="_csrf" value="<%= csrf %>" />
             <div class="flex flex-col w-full">
@@ -34,7 +34,7 @@
                 Modify
               </button>
               <a
-                href="/displayelections/correspondingquestion/<%= election.id %>/<%= question.id %>/options"
+                href="/getelections/addoption/<%= election.id %>/<%= question.id %>/options"
                 class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-3 py-1"
               >
                 Cancel

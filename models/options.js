@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       });
     }
-    static modifyoption(newValue, id) {
+    static editoption(newValue, id) {
       return this.update(
         {
           optionname: newValue,
@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       );
     }
-    static removeoptions(id) {
+    static deleteoptions(id) {
       return this.destroy({
         where: {
           id,
