@@ -864,14 +864,13 @@ app.get("/vote/:publicurl/", async (request, response) => {
     const election = await Election.getElectionurl(request.params.publicurl);
     if (request.user.case === "voters") {
       if (election.launched) {
-        const question = await questions.retrievequestions(election.id);
+        const question = await questions.getquestions(election.id);
         let optionsnew = [];
         for (let i = 0; i < question.length; i++) {
           const optionlist = await options.retrieveoptions(question[i].id);
           optionsnew.push(optionlist);
         }
-
-        return response.render("voterview", {
+        return response.render("castevote", {
           publicurl: request.params.publicurl,
           id: election.id,
           title: election.electionName,
@@ -881,13 +880,10 @@ app.get("/vote/:publicurl/", async (request, response) => {
           csrfToken: request.csrfToken(),
         });
       } else {
-        return response.render("invalid");
+        return response.render("Invalid");
       }
     } else if (request.user.case === "admins") {
-      request.flash(
-        "error",
-        "Ooopss!! You can not vote as admin Signout as admin to vote.!!"
-      );
+      request.flash("error", "Sorry! Can't vote as admin");
       return response.redirect(`/electionslist/${election.id}`);
     }
   } catch (error) {
