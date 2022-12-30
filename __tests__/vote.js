@@ -463,7 +463,6 @@ describe("Voting application test suite", function () {
   test("Preview election", async () => {
     const agent = request.agent(server);
     await login(agent, "vineeth@test.com", "12345678");
-
     let res = await agent.get("/addquestion");
     let csrfToken = extractCsrfToken(res);
     await agent.post("/elections").send({
@@ -478,7 +477,6 @@ describe("Voting application test suite", function () {
     const electionCount = parsedElectionsResponse.elections_list.length;
     const latestElection =
       parsedElectionsResponse.elections_list[electionCount - 1];
-
     res = await agent.get(`/election/${latestElection.id}/previewelection`);
     csrfToken = extractCsrfToken(res);
     expect(res.statusCode).toBe(200);

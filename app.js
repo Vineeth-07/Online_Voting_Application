@@ -52,11 +52,11 @@ passport.use(
           if (result) {
             return done(null, user);
           } else {
-            return done(null, false, { message: "Invalid Password!!!" });
+            return done(null, false, { message: "Invalid Password!" });
           }
         })
         .catch(() => {
-          return done(null, false, { message: "Invalid Email-ID!!!!" });
+          return done(null, false, { message: "Invalid Email-ID!" });
         });
     }
   )
@@ -89,9 +89,13 @@ passport.use(
   )
 );
 
+app.set("view engine", "ejs");
+// eslint-disable-next-line no-undef
+app.use(express.static(path.join(__dirname, "public")));
 passport.serializeUser((user, done) => {
   done(null, { id: user.id, case: user.case });
 });
+
 passport.deserializeUser((id, done) => {
   if (id.case === "admins") {
     Admin.findByPk(id.id)
@@ -111,9 +115,6 @@ passport.deserializeUser((id, done) => {
       });
   }
 });
-app.set("view engine", "ejs");
-// eslint-disable-next-line no-undef
-app.use(express.static(path.join(__dirname, "public")));
 
 app.post(
   "/session",
@@ -123,16 +124,6 @@ app.post(
   }),
   async (request, response) => {
     return response.redirect("/elections");
-  }
-);
-
-app.post(
-  "/vote/:publicurl",
-  passport.authenticate("voter-local", {
-    failureFlash: true,
-  }),
-  async (request, response) => {
-    return response.redirect(`/vote/${request.params.publicurl}`);
   }
 );
 
@@ -690,6 +681,16 @@ app.get(
 );
 
 app.post(
+  "/vote/:publicurl",
+  passport.authenticate("voter-local", {
+    failureFlash: true,
+  }),
+  async (request, response) => {
+    return response.redirect(`/vote/${request.params.publicurl}`);
+  }
+);
+
+app.post(
   "/newvoter/:id",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
@@ -880,7 +881,7 @@ app.get("/vote/:publicurl/", async (request, response) => {
           csrfToken: request.csrfToken(),
         });
       } else {
-        return response.render("Invalid");
+        return response.render("404");
       }
     } else if (request.user.case === "admins") {
       request.flash("error", "Sorry! Can't vote as admin");
