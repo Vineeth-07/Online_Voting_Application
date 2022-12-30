@@ -17,6 +17,16 @@ module.exports = (sequelize, DataTypes) => {
         electionID,
       });
     }
+
+    static searchquestion(electionID, questionname) {
+      return this.findOne({
+        where: {
+          questionname: questionname,
+          electionID: electionID,
+        },
+      });
+    }
+
     static getquestion(id) {
       return this.findOne({
         where: {

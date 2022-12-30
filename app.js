@@ -82,7 +82,7 @@ passport.use(
         })
         .catch(() => {
           return done(null, false, {
-            message: "invalid",
+            message: "Invalid ID",
           });
         });
     }
@@ -399,6 +399,10 @@ app.post(
         request.flash("error", "Question can't be empty!");
         return response.redirect(`/createquestions/${request.params.id}`);
       }
+      if (request.body.questionname < 3) {
+        request.flash("error", "Question name should be atlesat 3 characters!");
+        return response.redirect(`/createquestions/${request.params.id}`);
+      }
       try {
         const question = await questions.addquestion({
           electionID: request.params.id,
@@ -526,6 +530,12 @@ app.post(
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
     if (request.user.case === "admins") {
+      if (request.body.questionname.length < 3) {
+        request.flash("error", "Question name should be atlesat 3 characters!");
+        return response.redirect(
+          `/elections/${request.params.electionID}/questions/${request.params.questionID}/edit`
+        );
+      }
       try {
         await questions.editquestion(
           request.body.questionname,
@@ -685,15 +695,15 @@ app.post(
   async (request, response) => {
     if (request.user.case === "admins") {
       if (request.body.voterid.length == 0) {
-        request.flash("error", "Voter ID Can not be null!!");
+        request.flash("error", "Voter ID can't be empty!");
         return response.redirect(`/newvoter/${request.params.id}`);
       }
       if (request.body.password.length == 0) {
-        request.flash("error", "Password can not be empty!!");
+        request.flash("error", "Password can't be empty!!");
         return response.redirect(`/newvoter/${request.params.id}`);
       }
       if (request.body.password.length < 3) {
-        request.flash("error", "Password length can not be less than three!!");
+        request.flash("error", "Password length can't be less than 3!");
         return response.redirect(`/newvoter/${request.params.id}`);
       }
       const hashedPwd = await bcrypt.hash(request.body.password, saltRounds);
@@ -702,7 +712,7 @@ app.post(
         return response.redirect(`/voters/${request.params.id}`);
       } catch (error) {
         console.log(error);
-        request.flash("error", "VoterID already used, try another!");
+        request.flash("error", "Voter ID already used, try another!");
         return response.redirect(`/newvoter/${request.params.id}`);
       }
     }
