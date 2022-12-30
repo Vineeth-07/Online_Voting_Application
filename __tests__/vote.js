@@ -431,4 +431,56 @@ describe("Voting application test suite", function () {
       });
     expect(res.statusCode).toBe(302);
   });
+
+  test("Adding voter", async () => {
+    const agent = request.agent(server);
+    await login(agent, "vineeth@test.com", "12345678");
+
+    let res = await agent.get("/addquestion");
+    let csrfToken = extractCsrfToken(res);
+    await agent.post("/elections").send({
+      electionName: "Vote SPL",
+      publicurl: "URL-9",
+      _csrf: csrfToken,
+    });
+    const groupedResponse = await agent
+      .get("/elections")
+      .set("Accept", "application/json");
+    const parsedResponse = JSON.parse(groupedResponse.text);
+    const electionCount = parsedResponse.elections_list.length;
+    const latestElection = parsedResponse.elections_list[electionCount - 1];
+    res = await agent.get(`/newvoter/${latestElection.id}`);
+    csrfToken = extractCsrfToken(res);
+    let response = await agent.post(`/newvoter/${latestElection.id}`).send({
+      voterid: "vineeth",
+      password: "vineeth123",
+      electionID: latestElection.id,
+      _csrf: csrfToken,
+    });
+    expect(response.statusCode).toBe(302);
+  });
+
+  test("Preview election", async () => {
+    const agent = request.agent(server);
+    await login(agent, "vineeth@test.com", "12345678");
+
+    let res = await agent.get("/addquestion");
+    let csrfToken = extractCsrfToken(res);
+    await agent.post("/elections").send({
+      electionName: "Hello",
+      publicurl: "URL",
+      _csrf: csrfToken,
+    });
+    const ElectionsResponse = await agent
+      .get("/elections")
+      .set("Accept", "application/json");
+    const parsedElectionsResponse = JSON.parse(ElectionsResponse.text);
+    const electionCount = parsedElectionsResponse.elections_list.length;
+    const latestElection =
+      parsedElectionsResponse.elections_list[electionCount - 1];
+
+    res = await agent.get(`/election/${latestElection.id}/previewelection`);
+    csrfToken = extractCsrfToken(res);
+    expect(res.statusCode).toBe(200);
+  });
 });
