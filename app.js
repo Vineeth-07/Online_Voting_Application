@@ -839,10 +839,57 @@ app.get(
 app.get("/externalpage/:publicurl", async (request, response) => {
   try {
     const election = await Election.getElectionurl(request.params.publicurl);
-    return response.render("voterlogin", {
+    return response.render("loginvoter", {
       publicurl: election.publicurl,
       csrfToken: request.csrfToken(),
     });
+  } catch (error) {
+    console.log(error);
+    return response.status(422).json(error);
+  }
+});
+
+app.get("/vote/:publicurl/", async (request, response) => {
+  if (request.user === false) {
+    request.flash("error", "Please login before voting!");
+    return response.redirect(`/externalpage/${request.params.publicurl}`);
+  }
+  const election = await Election.getElectionurl(request.params.publicurl);
+
+  if (request.user.voted && election.launched) {
+    return response.redirect(`/vote/${request.params.publicurl}/endpage`);
+  }
+
+  try {
+    const election = await Election.getElectionurl(request.params.publicurl);
+    if (request.user.case === "voters") {
+      if (election.launched) {
+        const question = await questions.retrievequestions(election.id);
+        let optionsnew = [];
+        for (let i = 0; i < question.length; i++) {
+          const optionlist = await options.retrieveoptions(question[i].id);
+          optionsnew.push(optionlist);
+        }
+
+        return response.render("voterview", {
+          publicurl: request.params.publicurl,
+          id: election.id,
+          title: election.electionName,
+          electionID: election.id,
+          question,
+          optionsnew,
+          csrfToken: request.csrfToken(),
+        });
+      } else {
+        return response.render("invalid");
+      }
+    } else if (request.user.case === "admins") {
+      request.flash(
+        "error",
+        "Ooopss!! You can not vote as admin Signout as admin to vote.!!"
+      );
+      return response.redirect(`/electionslist/${election.id}`);
+    }
   } catch (error) {
     console.log(error);
     return response.status(422).json(error);
