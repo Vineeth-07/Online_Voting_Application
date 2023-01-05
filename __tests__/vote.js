@@ -51,4 +51,21 @@ describe("Voting application test suite", function () {
     });
     expect(res.statusCode).toBe(302);
   });
+
+  test("User login", async () => {
+    res = await agent.get("/homepage");
+    expect(res.statusCode).toBe(200);
+    await login(agent, "vineeth@test.com", "123456789");
+    res = await agent.get("/homepage");
+    expect(res.statusCode).toBe(200);
+  });
+
+  test("User signout", async () => {
+    let res = await agent.get("/homepage");
+    expect(res.statusCode).toBe(200);
+    res = await agent.get("/signout");
+    expect(res.statusCode).toBe(302);
+    res = await agent.get("/homepage");
+    expect(res.statusCode).toBe(302);
+  });
 });
