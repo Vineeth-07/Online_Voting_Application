@@ -39,6 +39,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(
+  "user-local",
   new LocalStratergy(
     {
       usernameField: "email",
@@ -71,7 +72,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser((id, done) => {
   admin
-    .findByPk(id)
+    .findByPk(id.id)
     .then((user) => {
       done(null, user);
     })
@@ -87,17 +88,16 @@ app.post(
     failureFlash: true,
   }),
   async (request, response) => {
-    return response.redirect("/elections");
+    return response.redirect("/homepage");
   }
 );
 
-app.get("/", async (request, response) => {
+app.get("/", (request, response) => {
   if (request.user) {
     return response.redirect("/homepage");
   } else {
-    return response.render("index", {
-      title: "Todo Application",
-      csrfToken: request.csrfToken(),
+    response.render("index", {
+      title: "Welcom To Online Voting Platform",
     });
   }
 });
@@ -129,14 +129,14 @@ app.get("/signout", (request, response, next) => {
     if (error) {
       return next(error);
     }
-    request.flash("success", "Signout successfully!");
+    request.flash("success", "Signout successfully!!");
     response.redirect("/");
   });
 });
 
 app.get("/login", (request, response) => {
   if (request.user) {
-    return response.redirect("/homeapge");
+    return response.redirect("/homepage");
   }
   response.render("login", {
     title: "Login to your admin account",
@@ -145,12 +145,12 @@ app.get("/login", (request, response) => {
 });
 
 app.post("/admin", async (request, response) => {
-  if (request.body.email.length == 0) {
-    request.flash("error", "Email can't be empty!");
+  if (request.body.firstName.length == 0) {
+    request.flash("error", "Firstname can not be empty!");
     return response.redirect("/signup");
   }
-  if (request.body.firstName.length == 0) {
-    request.flash("error", "Firstname can't be empty!");
+  if (request.body.email.length == 0) {
+    request.flash("error", "Email can't be empty!");
     return response.redirect("/signup");
   }
   if (request.body.password.length == 0) {
@@ -175,13 +175,30 @@ app.post("/admin", async (request, response) => {
         response.redirect("/");
       } else {
         request.flash("success", "Signup successfully!");
-        response.redirect("/elections");
+        response.redirect("/homepage");
       }
     });
   } catch (error) {
     console.log(error);
-    request.flash("error", "User already exist with this mail!");
+    request.flash("error", "User already Exist with this mail!");
     return response.redirect("/signup");
+  }
+});
+
+app.get("/homepage", connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
+  let uid = await admin.findByPk(req.user.id);
+  let name = uid.dataValues.firstName;
+  try {
+    if (req.accepts("html")) {
+      res.render("homepage", {
+        title: "Online Voting Homepage",
+        uid,
+        userName: name,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(422).json(error);
   }
 });
 
