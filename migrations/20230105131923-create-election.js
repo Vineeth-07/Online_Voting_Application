@@ -1,8 +1,11 @@
 "use strict";
+
+const { DataTypes } = require("sequelize");
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("elections", {
+    await queryInterface.createTable("Elections", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,11 +16,11 @@ module.exports = {
         type: Sequelize.STRING,
       },
       launched: {
-        type: Sequelize.STRING,
+        type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
       ended: {
-        type: Sequelize.STRING,
+        type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
       publicurl: {
@@ -36,6 +39,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("elections");
+    await queryInterface.dropTable("Elections");
   },
 };

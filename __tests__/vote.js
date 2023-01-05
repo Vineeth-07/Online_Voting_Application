@@ -53,19 +53,19 @@ describe("Voting application test suite", function () {
   });
 
   test("User login", async () => {
-    res = await agent.get("/homepage");
+    res = await agent.get("/electionpage");
     expect(res.statusCode).toBe(200);
     await login(agent, "vineeth@test.com", "123456789");
-    res = await agent.get("/homepage");
+    res = await agent.get("/electionpage");
     expect(res.statusCode).toBe(200);
   });
 
   test("User signout", async () => {
-    let res = await agent.get("/homepage");
+    let res = await agent.get("/electionpage");
     expect(res.statusCode).toBe(200);
     res = await agent.get("/signout");
     expect(res.statusCode).toBe(302);
-    res = await agent.get("/homepage");
+    res = await agent.get("/electionpage");
     expect(res.statusCode).toBe(302);
   });
 });

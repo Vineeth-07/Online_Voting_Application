@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const csrf = require("tiny-csrf");
 const cookieParser = require("cookie-parser");
-const { admin } = require("./models");
+const { admin, Election } = require("./models");
 const bodyParser = require("body-parser");
 const connectEnsureLogin = require("connect-ensure-login");
 const LocalStratergy = require("passport-local");
@@ -88,20 +88,21 @@ app.post(
     failureFlash: true,
   }),
   async (request, response) => {
-    return response.redirect("/homepage");
+    return response.redirect("/electionpage");
   }
 );
 
 app.get("/", (request, response) => {
   if (request.user) {
-    return response.redirect("/homepage");
+    return response.redirect("/electionpage");
   } else {
     response.render("index", {
-      title: "Welcom To Online Voting Platform",
+      title: "Welcome To Online Voting Platform",
     });
   }
 });
 
+// index page
 app.get(
   "/index",
   connectEnsureLogin.ensureLoggedIn(),
@@ -113,6 +114,7 @@ app.get(
   }
 );
 
+// signup page
 app.get("/signup", (request, response) => {
   try {
     response.render("signup", {
@@ -124,6 +126,7 @@ app.get("/signup", (request, response) => {
   }
 });
 
+//signout
 app.get("/signout", (request, response, next) => {
   request.logout((error) => {
     if (error) {
@@ -134,9 +137,10 @@ app.get("/signout", (request, response, next) => {
   });
 });
 
+//login
 app.get("/login", (request, response) => {
   if (request.user) {
-    return response.redirect("/homepage");
+    return response.redirect("/electionpage");
   }
   response.render("login", {
     title: "Login to your admin account",
@@ -144,6 +148,7 @@ app.get("/login", (request, response) => {
   });
 });
 
+//post method for admin signup
 app.post("/admin", async (request, response) => {
   if (request.body.firstName.length == 0) {
     request.flash("error", "Firstname can not be empty!");
@@ -175,7 +180,7 @@ app.post("/admin", async (request, response) => {
         response.redirect("/");
       } else {
         request.flash("success", "Signup successfully!");
-        response.redirect("/homepage");
+        response.redirect("/electionpage");
       }
     });
   } catch (error) {
@@ -185,21 +190,76 @@ app.post("/admin", async (request, response) => {
   }
 });
 
-app.get("/homepage", connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
-  let uid = await admin.findByPk(req.user.id);
-  let name = uid.dataValues.firstName;
-  try {
-    if (req.accepts("html")) {
-      res.render("homepage", {
-        title: "Online Voting Homepage",
-        uid,
-        userName: name,
-      });
+//homepage of admin
+app.get(
+  "/electionpage",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    let uid = await admin.findByPk(req.user.id);
+    let name = uid.dataValues.firstName;
+    try {
+      if (req.accepts("html")) {
+        res.render("homepage", {
+          title: "Online Voting Homepage",
+          uid,
+          userName: name,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(422).json(error);
     }
-  } catch (error) {
-    console.log(error);
-    return res.status(422).json(error);
   }
-});
+);
+
+//election creation page
+app.get(
+  "/electionpage/addelection",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    return res.render("create-election", {
+      title: "Create election",
+      csrfToken: req.csrfToken(),
+    });
+  }
+);
+
+app.post(
+  "/electionpage",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    if (request.body.electionName.length < 5) {
+      request.flash(
+        "error",
+        "Election name should contain atleast 5 characters"
+      );
+      return response.redirect("/electionpage/addelection");
+    }
+    if (request.body.publicurl.length < 3) {
+      request.flash("error", "URL should contain atleast 3 characters");
+      return response.redirect("/electionpage/addelection");
+    }
+    let spaceCheck =
+      request.body.publicurl.includes(" ") ||
+      request.body.publicurl.includes("\n") ||
+      request.body.publicurl.includes("\t");
+    if (spaceCheck == true) {
+      request.flash("error", "URL should not contain spaces");
+      return response.redirect("/electionpage/addelection");
+    }
+    try {
+      await Election.createElection({
+        electionName: request.body.electionName,
+        publicurl: request.body.publicurl,
+        adminID: request.user.id,
+      });
+      return response.redirect("/electionpage");
+    } catch (error) {
+      console.log(error);
+      request.flash("error", "URL is already in use, try another!");
+      return response.redirect("/electionpage/addelection");
+    }
+  }
+);
 
 module.exports = app;
