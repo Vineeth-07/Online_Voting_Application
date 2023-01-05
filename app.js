@@ -93,7 +93,7 @@ app.post(
 
 app.get("/", async (request, response) => {
   if (request.user) {
-    return response.redirect("/todo");
+    return response.redirect("/homepage");
   } else {
     return response.render("index", {
       title: "Todo Application",
@@ -129,14 +129,14 @@ app.get("/signout", (request, response, next) => {
     if (error) {
       return next(error);
     }
-    request.flash("success", "Signout successfully!!");
+    request.flash("success", "Signout successfully!");
     response.redirect("/");
   });
 });
 
 app.get("/login", (request, response) => {
   if (request.user) {
-    return response.redirect("/elections");
+    return response.redirect("/homeapge");
   }
   response.render("login", {
     title: "Login to your admin account",
@@ -174,13 +174,13 @@ app.post("/admin", async (request, response) => {
         console.log(err);
         response.redirect("/");
       } else {
-        request.flash("success", "Signup successfully!!");
+        request.flash("success", "Signup successfully!");
         response.redirect("/elections");
       }
     });
   } catch (error) {
     console.log(error);
-    request.flash("error", "User Already Exist with this mail!!");
+    request.flash("error", "User already exist with this mail!");
     return response.redirect("/signup");
   }
 });
