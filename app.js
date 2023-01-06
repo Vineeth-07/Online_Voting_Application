@@ -267,4 +267,24 @@ app.post(
   }
 );
 
+app.get(
+  "/electionpage/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    console.log(req.params.id);
+    try {
+      const ele = await Election.findByPk(req.params.id);
+      res.render("launch-end", {
+        title: "Election Page",
+        id: req.params.id,
+        ele,
+        csrfToken: req.csrfToken(),
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(422).json(err);
+    }
+  }
+);
+
 module.exports = app;
