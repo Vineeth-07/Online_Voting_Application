@@ -267,6 +267,7 @@ app.post(
   }
 );
 
+//election page
 app.get(
   "/electionpage/:id",
   connectEnsureLogin.ensureLoggedIn(),
@@ -287,4 +288,6 @@ app.get(
   }
 );
 
+//questions page
+app.get("/electionpage/:id/que", connectEnsureLogin.ensureLoggedIn());
 module.exports = app;
