@@ -68,4 +68,17 @@ describe("Voting application test suite", function () {
     res = await agent.get("/electionpage");
     expect(res.statusCode).toBe(302);
   });
+
+  test("Creating election", async () => {
+    const agent = request.agent(server);
+    await login(agent, "vineeth@test.com", "123456789");
+    const res = await agent.get("/electionpage/addelection");
+    const csrfToken = extractCsrfToken(res);
+    const response = await agent.post("/electionpage").send({
+      electionName: "election",
+      publicurl: "election",
+      _csrf: csrfToken,
+    });
+    expect(response.statusCode).toBe(302);
+  });
 });
