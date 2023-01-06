@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const csrf = require("tiny-csrf");
 const cookieParser = require("cookie-parser");
-const { admin, Election } = require("./models");
+const { admin, Election, questions } = require("./models");
 const bodyParser = require("body-parser");
 const connectEnsureLogin = require("connect-ensure-login");
 const LocalStratergy = require("passport-local");
@@ -289,5 +289,29 @@ app.get(
 );
 
 //questions page
-app.get("/electionpage/:id/que", connectEnsureLogin.ensureLoggedIn());
+app.get(
+  "/electionpage/:id/que",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    try {
+      const ele = await Election.retriveElection(req.params.id);
+      const que = await questions.retriveQuestions(req.params.id);
+      if (req.accepts("html")) {
+        return res.render("questions-page", {
+          title: ele.electionName,
+          id: req.params.id,
+          que,
+          csrfToken: req.csrfToken(),
+        });
+      } else {
+        return res.json({
+          que,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+      return res.status(422).json(err);
+    }
+  }
+);
 module.exports = app;

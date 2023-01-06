@@ -26,6 +26,15 @@ module.exports = (sequelize, DataTypes) => {
       return retriveElections;
     }
 
+    static retriveElection(id) {
+      let retriveElection = this.findOne({
+        where: {
+          id,
+        },
+      });
+      return retriveElection;
+    }
+
     static associate(models) {
       // define association here
       Election.belongsTo(models.admin, {
