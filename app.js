@@ -314,4 +314,47 @@ app.get(
     }
   }
 );
+
+//create question
+app.get(
+  "/electionpage/:id/que/createque",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    try {
+      return res.render("create-question.ejs", {
+        title: "Create question",
+        id: req.params.id,
+        csrfToken: req.csrfToken(),
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(422).json(err);
+    }
+  }
+);
+
+app.post(
+  "/electionpage/:id/que/createque",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    if (req.body.question.length < 5) {
+      req.flash("error", "Question contain atleast 5 characters!");
+      return res.redirect(`/electionpage/${req.params.id}/que/createque`);
+    }
+    try {
+      const que = await questions.createQuestion({
+        question: req.body.question,
+        description: req.body.description,
+        electionId: req.params.id,
+      });
+      return res.redirect(
+        `/electionpage/${req.params.id}/que/${que.id}/createoptions`
+      );
+    } catch (error) {
+      console.log(error);
+      return res.status(422).json(error);
+    }
+  }
+);
+
 module.exports = app;

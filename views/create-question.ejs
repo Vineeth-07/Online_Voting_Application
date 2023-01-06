@@ -178,21 +178,23 @@
 </head>
 <body>
     <%- include('heading.ejs') %>
-    <div class="flex gap-1 mx-10 mt-6 bg-rgba(0,0,0,.5)">
-        <h1 style="color:white">></span>
+    <span style="color:white">></span>
         <a href="/electionpage" class="text-white">Home page</a>
-    </div>
+        <span style="color:white">></span>
+        <a href="/electionpage/<%= id %>" class="text-white">Election page</a>
+        <span style="color:white">></span>
+        <a href="/electionpage/<%= id %>/que" class="text-white">Questions page</a>
     <div class="login-box">
         <h2>Create Election</h2>
-        <form action="/electionpage" method="post">
+        <form action="/electionpage/<%= id %>/que/createque" method="post">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
             <div class="user-box">
-                <input type="text" name="electionName" id="electionName" required="">
-                <label>Election Name</label>
+                <input id="question" name="question" type="text" required="">
+                <label>Question Name</label>
               </div>
               <div class="user-box">
-                <input type="text" name="publicurl" id="publicurl" required="">
-                <label>URL</label>
+                <input id="description" name="description" type="text" required="">
+                <label>Description</label>
               </div>
           <button type="submit" style="color: white;" >
             <span></span>
@@ -203,10 +205,10 @@
           </button>
         </form>
         <% if(messages && messages.error && messages.error.length > 0)  { %>
-          <% for(var i=0; i<messages.error.length; i++) { %>
-            <p class="bg-red-200 my-3 list-none rounded px-4 py-2"><%= messages.error[i] %></p>
+            <% for(var i=0; i<messages.error.length; i++) { %>
+              <p class="bg-red-200 my-3 list-none rounded px-4 py-2"><%= messages.error[i] %></p>
+            <% } %>
           <% } %>
-        <% } %>
       </div>
 </body>
 </html>

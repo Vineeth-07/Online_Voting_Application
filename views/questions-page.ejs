@@ -13,12 +13,17 @@
 </head>
 <body>
     <%- include('heading.ejs') %>
-    <div class="flex gap-1 mx-10 mt-6 ">
-        <span style="color:black">></span>
+    <span style="color:black">></span>
         <a href="/electionpage" class="text-black">Home page</a>
         <span style="color:black">></span>
         <a href="/electionpage/<%= id %>" class="text-black">Election page</a>
-    </div>
+        <h3 class="text-4xl my-4 font-semibold"><%= title %></h3>
+        <div class="flex gap-2 py-4 justify-between">
+            <h5 class="text-2xl">Questions List</h5>
+            <div class="bg-black rounded w-fit px-2 py-1 hover:bg-black">
+                <a href="/electionpage/<%= id %>/que/createque" class="text-white">Add Question</a>
+            </div>
+        </div>
     <div class="my-6 mx-10">
         <h3 class="text-4xl my-4 font-medium"></h3>
     </div>
