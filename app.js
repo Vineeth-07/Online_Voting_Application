@@ -198,12 +198,17 @@ app.get(
     let uid = await admin.findByPk(req.user.id);
     let name = uid.dataValues.firstName;
     try {
+      const listOfElections = await Election.retriveElections(req.user.id);
       if (req.accepts("html")) {
         res.render("homepage", {
           title: "Online Voting Homepage",
           uid,
           userName: name,
+          listOfElections,
+          noOfElections: listOfElections.length,
         });
+      } else {
+        return res.json({ listOfElections });
       }
     } catch (error) {
       console.log(error);

@@ -8,11 +8,22 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static createElection({ electionName, adminID, publicurl }) {
-      return this.create({
+      let createElection = this.create({
         electionName,
         publicurl,
         adminID,
       });
+      return createElection;
+    }
+
+    static retriveElections(adminID) {
+      let retriveElections = this.findAll({
+        where: {
+          adminID,
+        },
+        order: [["id", "ASC"]],
+      });
+      return retriveElections;
     }
 
     static associate(models) {
