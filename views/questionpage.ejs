@@ -11,7 +11,7 @@
         function deleteOption(optionId) {
             let electionID = <%= id %>;
             let questionID = <%= questionId %>;
-            fetch(`/electionpage/${electionID}/que/${questionID}/options/${optionId}`, {
+            fetch(`/electionpage/${electionID}/que/${questionID}/opt/${optionId}`, {
                 method: "delete",
                 headers: {"Content-Type":"application/json"},
                 body: JSON.stringify({
@@ -31,13 +31,6 @@
     <%- include('heading.ejs') %>
     <div class="grid grid-cols-6">
         <div class="col-start-2 col-span-4">
-            <div class="rounded-lg px-6 py-2">
-                <% if (messages && messages.error && messages.error.length > 0) { %>
-                    <% for(var i=0; i<messages.error.length; i++) { %>
-                        <p class="bg-purple-100 my-3 list-none rounded-md px-4 py-2"><%= messages.error[i] %></p>
-                    <% } %>
-                <% } %>
-                </div>
             <div class="px-2 py-1">
                 <h3 class="text-2xl my-2"><%= title %></h3>
                 <p class="text-black text-md my-2"><%= description %></p>
@@ -50,7 +43,7 @@
                                 <p class="ml-2 text-lg "><%= options[i].option %></p>
                                 <div class="flex gap-2 text-purple-800">
                                 <div class="rounded w-fit px-2 py-1 flex gap-2 cursor-pointer ">                                                                       
-                                    <a href="/electionpage/<%= id %>/que/<%= questionId %>/options/<%= options[i].id %>/edit" class="text-sm text-black">Edit </a>
+                                    <a href="/electionpage/<%= id %>/que/<%= questionId %>/opt/<%= options[i].id %>/edit" class="text-sm text-black">Edit </a>
                                 </div>
                                 <div class="rounded w-fit px-2 py-1 flex gap-2 cursor-pointer ">                                  
                                     <a onclick="deleteOption(<%= options[i].id %>)" class="text-sm text-black">Delete </a>

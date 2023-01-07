@@ -25,6 +25,15 @@ module.exports = (sequelize, DataTypes) => {
       return retriveOptions;
     }
 
+    static retriveOption(id) {
+      let retriveOption = this.findOne({
+        where: {
+          id,
+        },
+      });
+      return retriveOption;
+    }
+
     static deleteOption(id) {
       let deleteOption = this.destroy({
         where: {
@@ -32,6 +41,20 @@ module.exports = (sequelize, DataTypes) => {
         },
       });
       return deleteOption;
+    }
+
+    static editOption({ option, id }) {
+      let editOption = this.update(
+        {
+          option,
+        },
+        {
+          where: {
+            id,
+          },
+        }
+      );
+      return editOption;
     }
 
     static associate(models) {

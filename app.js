@@ -395,12 +395,55 @@ app.post(
 );
 
 app.delete(
-  "/electionpage/:electionId/que/:questionId/options/:optionId",
+  "/electionpage/:electionId/que/:questionId/opt/:optionId",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
     try {
       const result = Options.deleteOption(req.params.optionId);
       return res.json({ success: result === 1 });
+    } catch (err) {
+      console.log(err);
+      return res.status(422).json(err);
+    }
+  }
+);
+
+app.get(
+  "/electionpage/:electionId/que/:questionId/opt/:optionId/edit",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    try {
+      const option = await Options.retriveOptions(req.params.optionId);
+      return res.render("edit-option", {
+        option: option.option,
+        csrfToken: req.csrfToken(),
+        electionId: req.params.electionId,
+        questionId: req.params.questionId,
+        optionId: req.params.optionId,
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(422).json(err);
+    }
+  }
+);
+
+app.put(
+  "/electionpage/:electionId/que/:questionId/opt/:optionId/edit",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    if (!req.body.option) {
+      req.flash("error", "Enter option");
+      return res.json({
+        error: "Enter option",
+      });
+    }
+    try {
+      const newOption = await Options.editOption({
+        option: req.body.option,
+        id: req.params.optionId,
+      });
+      return res.json(newOption);
     } catch (err) {
       console.log(err);
       return res.status(422).json(err);
