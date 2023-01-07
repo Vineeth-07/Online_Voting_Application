@@ -7,9 +7,9 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static createOption({ optionname, questionId }) {
+    static createOption({ option, questionId }) {
       let createOption = this.create({
-        optionname,
+        option,
         questionId,
       });
       return createOption;

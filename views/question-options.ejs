@@ -24,7 +24,7 @@
                 <% for(let i=0; i<options.length; i++) { %>
                     <li class="option-item">
                         <div class="flex justify-between items-center w-full my-2 px-2 py-1">
-                            <p class="ml-2 text-lg "><%= options[i].optionname %></p>
+                            <p class="ml-2 text-lg "><%= options[i].option %></p>
                             <div class="flex gap-2 ">
                             <div class="rounded w-fit px-2 py-1 flex gap-2">                                                                          
                                 <a href="/electionpage/<%=id%>/que/<%=questionId%>/createoptions/<%=options[i].id%>/edit" class="text-sm">Edit option</a>
@@ -42,7 +42,7 @@
             <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
             <div class="flex gap-2 py-4">
                 <div class="flex-auto">
-                    <input type="text" name="optionname" placeholder="Enter an option" class="border border-gray-500 text-gray-900 w-full rounded p-2 ">
+                    <input type="text" name="option" placeholder="Enter an option" class="border border-gray-500 text-gray-900 w-full rounded p-2 ">
                 </div>
                 <div class="bg-black rounded w-fit px-2 py-1 hover:bg-black">
                     <button type="submit" class="text-white" >Add option</button>

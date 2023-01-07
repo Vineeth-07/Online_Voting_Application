@@ -373,7 +373,7 @@ app.post(
   "/electionpage/:id/que/:questionId",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
-    if (!req.body.optionname) {
+    if (!req.body.option) {
       req.flash("error", "Option can not be empty");
       return res.redirect(
         `/electionpage/${req.params.id}/que/${req.params.questionId}`
@@ -381,7 +381,7 @@ app.post(
     }
     try {
       await Options.createOption({
-        option: req.body.optionname,
+        option: req.body.option,
         questionId: req.params.questionId,
       });
       return res.redirect(
