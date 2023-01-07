@@ -453,4 +453,62 @@ app.put(
   }
 );
 
+app.get(
+  "/electionpage/:electionId/que/:questionId/edit",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    try {
+      const question = await questions.retriveQuestion(req.params.questionId);
+      return res.render("edit-question", {
+        electionId: req.params.electionId,
+        questionId: req.params.questionId,
+        questionName: question.questionname,
+        description: question.description,
+        csrfToken: req.csrfToken(),
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(422).json(err);
+    }
+  }
+);
+
+app.put(
+  "/electionpage/:electionId/que/:questionId/edit",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    if (req.body.question.length < 5) {
+      req.flash("error", "Question length should be atleast 5");
+      return res.json({
+        error: "Question length should be atleast 5",
+      });
+    }
+    try {
+      const newQuestion = await questions.editQuestion({
+        questionname: req.body.question,
+        description: req.body.description,
+        id: req.params.questionId,
+      });
+      return res.json(newQuestion);
+    } catch (error) {
+      console.log(error);
+      return res.status(422).json(error);
+    }
+  }
+);
+
+app.delete(
+  "/deletequestion/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    try {
+      const result = await questions.removeQuestion(req.params.id);
+      return res.json({ success: result === 1 });
+    } catch (err) {
+      console.log(err);
+      return res.status(422).json(err);
+    }
+  }
+);
+
 module.exports = app;

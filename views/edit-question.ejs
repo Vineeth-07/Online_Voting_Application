@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrfToken %>">
     <title>Edit <%= questionName %></title>
     <style>
         html {
@@ -182,7 +183,7 @@
             let questionID = <%= questionId %>;
             let question = document.getElementById("question").value;
             let description = document.getElementById("description").value;
-            fetch(`/electionpage/${electionId}/questions/${questionId}/edit`, {
+            fetch(`/electionpage/${electionID}/que/${questionID}/edit`, {
                 method: "put",
                 headers: {"Content-Type":"application/json"},
                 body: JSON.stringify({
@@ -192,7 +193,7 @@
                 })
             }).then((res)=>{
                 if (res.ok) {
-                    window.location.replace(`/electionpage/${electionId}/que`);
+                    window.location.replace(`/electionpage/${electionID}/que`);
                 }
             }).catch((err)=> console.error(err))
         }
@@ -200,21 +201,15 @@
 </head>
 <body>
     <%- include('heading.ejs') %>
-    <span style="color:white">></span>
-        <a href="/electionpage" class="text-white">Home page</a>
-        <span style="color:white">></span>
-        <a href="/electionpage/<%= id %>" class="text-white">Election page</a>
-        <span style="color:white">></span>
-        <a href="/electionpage/<%= id %>/que" class="text-white">Questions page</a>
     <div class="login-box">
-        <h2>Create Question</h2>
+        <h2>Edit Question</h2>
             <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
             <div class="user-box">
-                <input value="<%= questionName %>" id="question" name="question" type="text">
+                <input id="question" name="question" type="text" required>
                 <label>Question Name</label>
               </div>
               <div class="user-box">
-                <input id="description" name="description" type="text" required="">
+                <input  id="description" name="description" type="text" required>
                 <label>Description</label>
               </div>
           <button style="color: white;" onclick="editQuestion()" >

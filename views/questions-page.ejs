@@ -10,12 +10,13 @@
         h3{text-align: center;}
         h5{text-align: center;}
         a{text-align: center;}
+        p{text-align: center;}
     </style>
     <title><%= title %></title>
     <script>
         var token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
-        function removeQuestion({electionID, questionID}) {
-            fetch(`/electionpage/${electionId}/que/${questionId}`, {
+        function removeQuestion(id) {
+            fetch(`/deletequestion/${id}`, {
                 method: "delete",
                 headers: {"Content-Type":"application/json"},
                 body: JSON.stringify({
@@ -36,7 +37,13 @@
         <span style="color:black">></span>
         <a href="/electionpage/<%= id %>" class="text-black">Election page</a>
         <h3 class="text-4xl my-4 font-semibold"><%= title %></h3>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
         <h5 class="text-2xl">Questions List</h5>
+        <% if (messages && messages.error && messages.error.length > 0) { %>
+            <% for(var i=0; i<messages.error.length; i++) { %>
+                <p class="bg-red-100 my-3 list-none rounded-md px-4 py-2"><%= messages.error[i] %></p>
+            <% } %>
+        <% } %>
             <div class="bg-black rounded w-fit px-2 py-1 hover:bg-black">
                 <a href="/electionpage/<%= id %>/que/createque" class="text-white">Add Question</a>
             </div>
@@ -62,7 +69,7 @@
                                     </div>
                                     <% if ((questions.length) > 1) { %>
                                     <div class="rounded w-fit px-2 py-1 flex gap-2 cursor-pointer">                                    
-                                        <a onclick="removeQuestion({electionId: <%= id %>, questionId: <%= questions[i].id %>})" class="text-sm text-black">Delete question</a>
+                                        <a onclick="removeQuestion(<%= questions[i].id %>)" class="text-sm text-black">Delete question</a>
                                     </div>
                                     <% } %>
                                 </div>
