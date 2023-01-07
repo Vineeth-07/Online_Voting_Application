@@ -8,6 +8,7 @@
     <meta name="csrf-token" content="<%= csrfToken %>">
     <style>
         h3{text-align: center;}
+        h2{text-align: center;}
     </style>
     <title><%= title %></title>
 </head>
@@ -19,10 +20,8 @@
     </div>
     <div class="my-6 mx-10">
         <h3 class="text-4xl my-4 font-medium"><%= ele.electionName %></h3>
-        <div class="flex gap-2 py-4 justify-between">
-            <div class="mt-4">
-                <h2 class="my-2 text-lg text-black flex gap-1"><span class="text-black"> </span> Questions</h2>
-                    <a href="/electionpage/<%= id %>/que" class="py-1 hover:text-green-600 text-black">Manage Questions</a>
+                <h2 class=" text-lg text-black flex gap-1"> Questions <span class="bg-gray-100 ml-2 px-2"><%= noOfQuestions %></span></h2>
+                    <a href="/electionpage/<%= id %>/que" class="py-1 hover:text-green-600 text-black">-> Manage Questions</a>
             </div>
         </div>
     </div>

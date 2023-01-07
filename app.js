@@ -275,10 +275,12 @@ app.get(
     console.log(req.params.id);
     try {
       const ele = await Election.findByPk(req.params.id);
+      const ques = await await questions.retriveQuestions(req.params.id);
       res.render("launch-end", {
         title: "Election Page",
         id: req.params.id,
         ele,
+        noOfQuestions: ques.length,
         csrfToken: req.csrfToken(),
       });
     } catch (err) {
