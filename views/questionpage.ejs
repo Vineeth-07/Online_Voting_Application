@@ -11,7 +11,7 @@
         function deleteOption(optionId) {
             let electionID = <%= id %>;
             let questionID = <%= questionId %>;
-            fetch(`/electionpage/${electionId}/que/${questionId}/options/${optionId}`, {
+            fetch(`/electionpage/${electionID}/que/${questionID}/options/${optionId}`, {
                 method: "delete",
                 headers: {"Content-Type":"application/json"},
                 body: JSON.stringify({

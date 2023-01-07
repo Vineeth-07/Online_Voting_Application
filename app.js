@@ -394,4 +394,18 @@ app.post(
   }
 );
 
+app.delete(
+  "/electionpage/:electionId/que/:questionId/options/:optionId",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    try {
+      const result = Options.deleteOption(req.params.optionId);
+      return res.json({ success: result === 1 });
+    } catch (err) {
+      console.log(err);
+      return res.status(422).json(err);
+    }
+  }
+);
+
 module.exports = app;
