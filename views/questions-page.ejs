@@ -42,8 +42,12 @@
         </div>
     <div class="my-6 mx-10">
         <div class="flex-auto">
-            <div class="mx-4">  
-                <p class="text-black"><%= (questions.length==0)?"Not added any questions yet!":"" %></p>
+            <div class="mx-4">
+                <div class="grid grid-cols-6">
+                    <div class="col-start-3 col-span-2">
+                        <b>
+                            <p class="text-black"><%= (questions.length==0)?"Not added any questions yet!":"" %></p>
+                        </b>  
                 <ol class="list-decimal">
                     <% for (let i=0; i<questions.length; i++) { %>
                         <li>
@@ -52,7 +56,7 @@
                                     <a href="/electionpage/<%= id %>/que/<%= questions[i].id %>" class="my-2 text-lg text-black text-bold "><%= questions[i].questionname %></a>
                                     <p class="text-black text-md my-2">Description: <%= questions[i].description %></p>
                                 </div>
-                                <div class="flex gap-2 text-purple-800">
+                                <div class="flex gap-2 text-black">
                                     <div class="rounded w-fit px-2 py-1 flex gap-2 cursor-pointer ">                                                                        
                                         <a href="/electionpage/<%= id %>/que/<%= questions[i].id %>/edit" class="text-sm text-black">Edit question</a>
                                     </div>

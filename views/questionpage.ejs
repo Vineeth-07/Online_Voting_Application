@@ -24,6 +24,10 @@
             }).catch((err)=> console.error(err))
         }
     </script>
+    <style>
+        h3{text-align: center;}
+        p{text-align:center;}
+    </style>
     <link rel="stylesheet" href="./css/style.css">
     <title><%= title %></title>
 </head>
@@ -37,6 +41,8 @@
             </div>
             <div class="ml-12">
                 <ol class="list-decimal">
+                    <div class="grid grid-cols-6">
+                        <div class="col-start-3 col-span-2">
                     <% for(let i=0; i<options.length; i++) { %>
                         <li class="option-item">
                             <div class="flex justify-between items-center w-full my-2 px-2 py-1 rounded-lg ">
@@ -56,16 +62,19 @@
             </div>
             <form action="/electionpage/<%= id %>/que/<%= questionId %>" method="post">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                <div class="flex gap-2 py-4">
+                    <div class="grid grid-cols-6">
+                        <div class="col-start-3 col-span-2">
                     <div class="flex-auto">
                         <input type="text" name="option" placeholder="Enter option" class="border border-gray-300 text-gray-900 w-full rounded p-2 text-sm" required autofocus/>
                     </div>
+                    <p class="text-black"><%= (options.length==0)?"No options added yet!":"" %></p>
+                    <br>
                     <div class="flex-none">
                         <button type="submit" class="bg-black text-white px-5 py-1.5 rounded mr-2 mb-2">Add option</button>
                     </div>
                 </div>
             </form>
-            <p class="text-black"><%= (options.length==0)?"No options added yet!":"" %></p>
+            
         </div>
     </div>
 </body>
