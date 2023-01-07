@@ -7,11 +7,37 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
+    static createOption({ optionname, questionId }) {
+      let createOption = this.create({
+        optionname,
+        questionId,
+      });
+      return createOption;
+    }
+
+    static retriveOptions(questionId) {
+      let retriveOptions = this.findAll({
+        where: {
+          questionId,
+        },
+        order: [["id", "ASC"]],
+      });
+      return retriveOptions;
+    }
+
+    static deleteOption(id) {
+      let deleteOption = this.destroy({
+        where: {
+          id,
+        },
+      });
+      return deleteOption;
+    }
 
     static associate(models) {
       // define association here
       Options.belongsTo(models.questions, {
-        foreignKey: "questionID",
+        foreignKey: "questionId",
         onDelete: "CASCADE",
       });
     }

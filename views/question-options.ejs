@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <title><%= title %></title>
+</head>
+<body>
+    <%- include('heading.ejs') %>
+    <span style="color:black">></span>
+        <a href="/electionpage" class="text-black">Home page</a>
+        <span style="color:black">></span>
+        <a href="/electionpage/<%= id %>" class="text-black">Election page</a>
+        <span style="color:black">></span>
+        <a href="/electionpage/<%= id %>/que" class="text-black">Questions page</a>
+        <h3 class="text-4xl my-4 font-semibold">Question: <%= title %></h3>
+        <h5 class="text-4xl my-4 font-semibold">Description: <%= description %></h5>
+    <div class="my-6 mx-10">
+        <div class="ml-12">
+            <ol class="list-decimal">
+                <% for(let i=0; i<options.length; i++) { %>
+                    <li class="option-item">
+                        <div class="flex justify-between items-center w-full my-2 px-2 py-1">
+                            <p class="ml-2 text-lg "><%= options[i].optionname %></p>
+                            <div class="flex gap-2 ">
+                            <div class="rounded w-fit px-2 py-1 flex gap-2">                                                                          
+                                <a href="/electionpage/<%=id%>/que/<%=questionId%>/createoptions/<%=options[i].id%>/edit" class="text-sm">Edit option</a>
+                            </div>
+                            <div class="rounded w-fit px-2 py-1 flex gap-2">         
+                                <a onclick="deleteOption(<%= options[i].id %>)" class="text-sm cursor-pointer">Delete option</a>
+                            </div>
+                            </div>
+                        </div>
+                    </li>
+                <% } %>
+            </ol>
+        </div>
+        <form action="/electionpage/<%=id%>/que/<%=questionId%>/createoptions" method="post">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <div class="flex gap-2 py-4">
+                <div class="flex-auto">
+                    <input type="text" name="optionname" placeholder="Enter an option" class="border border-gray-500 text-gray-900 w-full rounded p-2 ">
+                </div>
+                <div class="bg-black rounded w-fit px-2 py-1 hover:bg-black">
+                    <button type="submit" class="text-white" >Add option</button>
+                </div>
+            </div>
+        </form>
+        <b>
+        <p class=" justify-center" align="center"><%= (options.length==0)?"Options not added yet!":"" %></p>
+    </b>
+    </div> 
+    <% if(messages && messages.error && messages.error.length > 0)  { %>
+        <% for(var i=0; i<messages.error.length; i++) { %>
+          <p class="bg-red-200 my-3 list-none rounded px-4 py-2"><%= messages.error[i] %></p>
+        <% } %>
+      <% } %>
+        </div>
+    </div>
+</body>

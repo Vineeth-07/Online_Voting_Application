@@ -21,6 +21,40 @@ module.exports = (sequelize, DataTypes) => {
       return retriveQuestions;
     }
 
+    static async retriveQuestion(id) {
+      let retriveQuestion = await this.findOne({
+        where: {
+          id,
+        },
+        order: [["id", "ASC"]],
+      });
+      return retriveQuestion;
+    }
+
+    static editQuestion({ questionname, description, id }) {
+      let editQuestion = this.update(
+        {
+          questionname,
+          description,
+        },
+        {
+          returning: true,
+          where: {
+            id,
+          },
+        }
+      );
+      return editQuestion;
+    }
+
+    static removeQuestion(id) {
+      let removeQuestion = this.destroy({
+        where: {
+          id,
+        },
+      });
+      return removeQuestion;
+    }
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -28,6 +62,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      questions.belongsTo(models.Election, {
+        foreignKey: "electionId",
+      });
+
+      questions.hasMany(models.Options, {
+        foreignKey: "questionId",
+      });
     }
   }
   questions.init(

@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const csrf = require("tiny-csrf");
 const cookieParser = require("cookie-parser");
-const { admin, Election, questions } = require("./models");
+const { admin, Election, questions, Options } = require("./models");
 const bodyParser = require("body-parser");
 const connectEnsureLogin = require("connect-ensure-login");
 const LocalStratergy = require("passport-local");
@@ -288,24 +288,78 @@ app.get(
   }
 );
 
-//questions page
+app.get(
+  "/electionpage/:id/que/createque",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    res.render("create-question", {
+      title: "Create Question",
+      id: req.params.id,
+      csrfToken: req.csrfToken(),
+    });
+  }
+);
+
+app.post(
+  "/electionpage/:id/que/createque",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    if (req.body.questionname < 3) {
+      req.flash("error", "Question should contain 3 characters!");
+      return res.redirect(`/electionpage/${req.params.id}/que/createque`);
+    }
+    try {
+      const question = await questions.createQuestion({
+        electionId: req.params.id,
+        questionname: req.body.questionname,
+        description: req.body.description,
+      });
+      return res.redirect(`/electionpage/${req.params.id}/que/${question.id}`);
+    } catch (err) {
+      console.log(err);
+      return res.status(422).json(err);
+    }
+  }
+);
+
 app.get(
   "/electionpage/:id/que",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
+    const ques = await await questions.retriveQuestions(req.params.id);
+    const election = await Election.findByPk(req.params.id);
+    if (req.accepts("html")) {
+      res.render("questions-page", {
+        title: election.electionName,
+        id: req.params.id,
+        questions: ques,
+        election: election,
+        csrfToken: req.csrfToken(),
+      });
+    } else {
+      return res.json({
+        ques,
+      });
+    }
+  }
+);
+
+app.get(
+  "/electionpage/:id/que/:questionId",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
     try {
-      const ele = await Election.retriveElection(req.params.id);
-      const que = await questions.retriveQuestions(req.params.id);
+      const question = await questions.retriveQuestion(req.params.questionId);
+      const options = await Options.retriveOptions(req.params.questionId);
       if (req.accepts("html")) {
-        return res.render("questions-page", {
-          title: ele.electionName,
+        res.render("questionpage", {
+          title: question.questionname,
+          description: question.description,
           id: req.params.id,
-          que,
+          questionId: req.params.questionId,
+          electionId: req.params.electionName,
+          options,
           csrfToken: req.csrfToken(),
-        });
-      } else {
-        return res.json({
-          que,
         });
       }
     } catch (err) {
@@ -315,44 +369,27 @@ app.get(
   }
 );
 
-//create question
-app.get(
-  "/electionpage/:id/que/createque",
+app.post(
+  "/electionpage/:id/que/:questionId",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
+    if (!req.body.optionname) {
+      req.flash("error", "Option can not be empty");
+      return res.redirect(
+        `/electionpage/${req.params.id}/que/${req.params.questionId}`
+      );
+    }
     try {
-      return res.render("create-question.ejs", {
-        title: "Create question",
-        id: req.params.id,
-        csrfToken: req.csrfToken(),
+      await Options.createOption({
+        option: req.body.optionname,
+        questionId: req.params.questionId,
       });
+      return res.redirect(
+        `/electionpage/${req.params.id}/que/${req.params.questionId}`
+      );
     } catch (err) {
       console.log(err);
       return res.status(422).json(err);
-    }
-  }
-);
-
-app.post(
-  "/electionpage/:id/que/createque",
-  connectEnsureLogin.ensureLoggedIn(),
-  async (req, res) => {
-    if (req.body.question.length < 5) {
-      req.flash("error", "Question contain atleast 5 characters!");
-      return res.redirect(`/electionpage/${req.params.id}/que/createque`);
-    }
-    try {
-      const que = await questions.createQuestion({
-        question: req.body.question,
-        description: req.body.description,
-        electionId: req.params.id,
-      });
-      return res.redirect(
-        `/electionpage/${req.params.id}/que/${que.id}/createoptions`
-      );
-    } catch (error) {
-      console.log(error);
-      return res.status(422).json(error);
     }
   }
 );

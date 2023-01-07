@@ -40,6 +40,10 @@ module.exports = (sequelize, DataTypes) => {
       Election.belongsTo(models.admin, {
         foreignKey: "adminID",
       });
+
+      Election.hasMany(models.questions, {
+        foreignKey: "electionId",
+      });
     }
   }
   Election.init(
