@@ -515,12 +515,29 @@ app.get(
       if (req.accepts("html")) {
         return res.render("voters-manage", {
           title: election.electionName,
-          id: req.params.id,
+          id: req.params.electionId,
           csrfToken: req.csrfToken(),
         });
       } else {
         return res.json({});
       }
+    } catch (err) {
+      console.log(err);
+      return res.status(422).json(err);
+    }
+  }
+);
+
+app.get(
+  "/electionpage/:electionId/voters/votercreate",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    try {
+      res.render("create-voter", {
+        title: "Add voter",
+        electionId: req.params.electionId,
+        csrfToken: req.csrfToken(),
+      });
     } catch (err) {
       console.log(err);
       return res.status(422).json(err);
