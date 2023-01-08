@@ -506,4 +506,26 @@ app.delete(
   }
 );
 
+app.get(
+  "/electionpage/:id/voters",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    try {
+      const election = await Election.retriveElection(req.params.electionId);
+      if (req.accepts("html")) {
+        return res.render("voters-manage", {
+          title: election.electionName,
+          id: req.params.electionId,
+          csrfToken: req.csrfToken(),
+        });
+      } else {
+        return res.json({});
+      }
+    } catch (err) {
+      console.log(err);
+      return res.status(422).json(err);
+    }
+  }
+);
+
 module.exports = app;
