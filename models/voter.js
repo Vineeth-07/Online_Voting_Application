@@ -12,10 +12,20 @@ module.exports = (sequelize, DataTypes) => {
         voterid,
         password,
         electionId,
-        voted: false,
       });
       return addVoter;
     }
+
+    static async retriveVoters(electionId) {
+      let retriveVoters = await this.findAll({
+        where: {
+          electionId,
+        },
+        order: [["id", "ASC"]],
+      });
+      return retriveVoters;
+    }
+
     static associate(models) {
       // define association here
       Voters.belongsTo(models.Election, {

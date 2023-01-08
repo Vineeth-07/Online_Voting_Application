@@ -44,6 +44,10 @@ module.exports = (sequelize, DataTypes) => {
       Election.hasMany(models.questions, {
         foreignKey: "electionId",
       });
+
+      Election.hasMany(models.Voters, {
+        foreignKey: "electionId",
+      });
     }
   }
   Election.init(

@@ -512,14 +512,16 @@ app.get(
   async (req, res) => {
     try {
       const election = await Election.retriveElection(req.params.electionId);
+      const voters = await Voters.retriveVoters(req.params.electionId);
       if (req.accepts("html")) {
         return res.render("voters-manage", {
           title: election.electionName,
           id: req.params.electionId,
           csrfToken: req.csrfToken(),
+          voters,
         });
       } else {
-        return res.json({});
+        return res.json({ voters });
       }
     } catch (err) {
       console.log(err);

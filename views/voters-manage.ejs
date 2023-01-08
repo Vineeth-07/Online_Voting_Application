@@ -56,17 +56,18 @@
                             <p class="text-black"></p>
                         </b>  
                 <ol class="list-decimal">
-                    <%  { %>
+                    <%= voters.length %>
+                    <% for (let i=0; i<voters.length; i++) {  %>
                         <li>
                             <div class="flex justify-between items-center w-full my-2 px-2 py-1 rounded ">
                                 <div>
-                                    <a href="" class="my-2 text-lg text-black text-bold "></a>
+                                    <p class="my-2 text-lg text-black text-bold "><%= voters[i].voterid %></p>
                                 </div>
                                 <div class="flex gap-2 text-black">
                                     <div class="rounded w-fit px-2 py-1 flex gap-2 cursor-pointer ">                                                                        
                                         <a href="" class="text-sm text-black">Edit password</a>
                                     </div>
-                                    <% { %>
+                                    <% if (voters.length > 1) { %>
                                     <div class="rounded w-fit px-2 py-1 flex gap-2 cursor-pointer">                                    
                                         <a onclick="" class="text-sm text-black">Delete voter</a>
                                     </div>
