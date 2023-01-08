@@ -13,7 +13,6 @@ function extractCsrfToken(res) {
   return $("[name=_csrf]").val();
 }
 
-// eslint-disable-next-line no-unused-vars
 const login = async (agent, username, password) => {
   let res = await agent.get("/login");
   let csrfToken = extractCsrfToken(res);
@@ -79,6 +78,35 @@ describe("Voting application test suite", function () {
       publicurl: "election",
       _csrf: csrfToken,
     });
+    expect(response.statusCode).toBe(302);
+  });
+
+  test("Adding question", async () => {
+    const agent = request.agent(server);
+    await login(agent, "vineeth@test.com", "123456789");
+    let res = await agent.get("/electionpage/addelection");
+    let csrfToken = extractCsrfToken(res);
+    await agent.post("/electionpage").send({
+      electionName: "election",
+      publicurl: "election",
+      _csrf: csrfToken,
+    });
+    const groupedElectionsResponse = await agent
+      .get("/electionpage")
+      .set("Accept", "application/json");
+    const parsedGroupedResponse = JSON.parse(groupedElectionsResponse.text);
+    const noOfElections = parsedGroupedResponse.listOfElections.length;
+    const newElection =
+      parsedGroupedResponse.listOfElections[noOfElections - 1];
+    res = await agent.get(`/electionpage/${newElection.id}/que/createque`);
+    csrfToken = extractCsrfToken(res);
+    let response = await agent
+      .post(`/electionpage/${newElection.id}/que/createque`)
+      .send({
+        questionname: "election",
+        description: "election",
+        _csrf: csrfToken,
+      });
     expect(response.statusCode).toBe(302);
   });
 });
