@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <style>
+        h3{text-align: center;}
+        h5{text-align: center;}
+        a{text-align: center;}
+        p{text-align: center;}
+    </style>
+    <title><%= title %></title>
+    <script>
+        var token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+        function removeQuestion(id) {
+            fetch(`/deletequestion/${id}`, {
+                method: "delete",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({
+                    "_csrf":token
+                })
+            }).then((res)=>{
+                if (res.ok) {
+                    window.location.reload();
+                }
+            }).catch((err)=> console.error(err))
+        }
+    </script>
+</head>
+<body>
+    <%- include('heading.ejs') %>
+    <span style="color:black">></span>
+        <a href="/electionpage" class="text-black">Home page</a>
+        <span style="color:black">></span>
+        <a href="/electionpage/<%= id %>" class="text-black">Election</a>
+        <h3 class="text-4xl my-4 font-semibold"><%= title %></h3>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <h5 class="text-2xl">Voters List</h5>
+        <% if (messages && messages.error && messages.error.length > 0) { %>
+            <% for(var i=0; i<messages.error.length; i++) { %>
+                <p class="bg-red-100 my-3 list-none rounded-md px-4 py-2"><%= messages.error[i] %></p>
+            <% } %>
+        <% } %>
+            <div class="bg-black rounded w-fit px-2 py-1 hover:bg-black">
+                <a href="" class="text-white">Add Voter</a>
+            </div>
+    <div class="my-6 mx-10">
+        <div class="flex-auto">
+            <div class="mx-4">
+                <div class="grid grid-cols-6">
+                    <div class="col-start-3 col-span-2">
+                        <b>
+                            <p class="text-black"></p>
+                        </b>  
+                <ol class="list-decimal">
+                    <%  { %>
+                        <li>
+                            <div class="flex justify-between items-center w-full my-2 px-2 py-1 rounded ">
+                                <div>
+                                    <a href="" class="my-2 text-lg text-black text-bold "></a>
+                                </div>
+                                <div class="flex gap-2 text-black">
+                                    <div class="rounded w-fit px-2 py-1 flex gap-2 cursor-pointer ">                                                                        
+                                        <a href="" class="text-sm text-black">Edit password</a>
+                                    </div>
+                                    <% { %>
+                                    <div class="rounded w-fit px-2 py-1 flex gap-2 cursor-pointer">                                    
+                                        <a onclick="" class="text-sm text-black">Delete voter</a>
+                                    </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </li>
+                    <% } %>
+                </ol>
+            </div>
+        </div>
+    </div>
+</body>

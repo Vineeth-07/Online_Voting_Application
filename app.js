@@ -507,7 +507,7 @@ app.delete(
 );
 
 app.get(
-  "/electionpage/:id/voters",
+  "/electionpage/:electionId/voters",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
     try {
@@ -515,7 +515,7 @@ app.get(
       if (req.accepts("html")) {
         return res.render("voters-manage", {
           title: election.electionName,
-          id: req.params.electionId,
+          id: req.params.id,
           csrfToken: req.csrfToken(),
         });
       } else {
