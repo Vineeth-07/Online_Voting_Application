@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const csrf = require("tiny-csrf");
 const cookieParser = require("cookie-parser");
-const { admin, Election, questions, Options } = require("./models");
+const { admin, Election, questions, Options, Voters } = require("./models");
 const bodyParser = require("body-parser");
 const connectEnsureLogin = require("connect-ensure-login");
 const LocalStratergy = require("passport-local");
@@ -541,6 +541,34 @@ app.get(
     } catch (err) {
       console.log(err);
       return res.status(422).json(err);
+    }
+  }
+);
+
+app.post(
+  "/electionpage/:electionId/voters/votercreate",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    if (req.body.password.length < 8) {
+      req.flash("error", "Password should contain atleast 8");
+      return res.redirect(
+        `/electionpage/${req.params.electionId}/voters/votercreate`
+      );
+    }
+    const hashedPwd = await bcrypt.hash(req.body.password, saltRounds);
+    try {
+      await Voters.addVoter({
+        voterid: req.body.voterid,
+        password: hashedPwd,
+        electionID: req.params.electionID,
+      });
+      return res.redirect(`/electionpage/${req.params.electionId}/voters`);
+    } catch (err) {
+      console.log(err);
+      req.flash("error", "Voter ID already in use, try another!");
+      return res.redirect(
+        `/electionpage/${req.params.electionId}/voters/votercreate`
+      );
     }
   }
 );

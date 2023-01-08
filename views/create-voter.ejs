@@ -184,7 +184,7 @@
     </div>
     <div class="login-box">
         <h2>Create Voter</h2>
-        <form action="/electionpage/<%= electionId %>/voters/createvoter" method="post">
+        <form action="/electionpage/<%= electionId %>/voters/votercreate" method="post">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
             <div class="user-box">
                 <input id="voterid" name="voterid" type="voterid" required>
