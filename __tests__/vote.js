@@ -109,4 +109,67 @@ describe("Voting application test suite", function () {
       });
     expect(response.statusCode).toBe(302);
   });
+
+  test("Deleting question", async () => {
+    const agent = request.agent(server);
+    await login(agent, "vineeth@test.com", "123456789");
+    let res = await agent.get("/electionpage/addelection");
+    let csrfToken = extractCsrfToken(res);
+    await agent.post("/electionpage").send({
+      electionName: "election",
+      publicurl: "election",
+      _csrf: csrfToken,
+    });
+    const groupedElectionsResponse = await agent
+      .get("/electionpage")
+      .set("Accept", "application/json");
+    const parsedGroupedElectionsResponse = JSON.parse(
+      groupedElectionsResponse.text
+    );
+    const noOfElections = parsedGroupedElectionsResponse.listOfElections.length;
+    const newElection =
+      parsedGroupedElectionsResponse.listOfElections[noOfElections - 1];
+    res = await agent.get(`/electionpage/${newElection.id}/que/createque`);
+    csrfToken = extractCsrfToken(res);
+    await agent.post(`/electionpage/${newElection.id}/que/createque`).send({
+      questionname: "question",
+      description: "description",
+      _csrf: csrfToken,
+    });
+    res = await agent.get(`/electionpage/${newElection.id}/que/createque`);
+    csrfToken = extractCsrfToken(res);
+    await agent.post(`/electionpage/${newElection.id}/que/createque`).send({
+      question: "update question",
+      description: "update description",
+      _csrf: csrfToken,
+    });
+
+    const groupedQuestionsResponse = await agent
+      .get(`/electionpage/${newElection.id}/que`)
+      .set("Accept", "application/json");
+    const parsedQuestionsGroupedResponse = JSON.parse(
+      groupedQuestionsResponse.text
+    );
+    const questionCount = parsedQuestionsGroupedResponse.ques.length;
+    const latestQuestion =
+      parsedQuestionsGroupedResponse.ques[questionCount - 1];
+    res = await agent.get(`/electionpage/${newElection.id}/que`);
+    csrfToken = extractCsrfToken(res);
+    const deleteResponse = await agent
+      .delete(`/deletequestion/${latestQuestion.id}`)
+      .send({
+        _csrf: csrfToken,
+      });
+    const parsedDeleteResponse = JSON.parse(deleteResponse.text).success;
+    expect(parsedDeleteResponse).toBe(true);
+    res = await agent.get(`/electionpage/${newElection.id}/que`);
+    csrfToken = extractCsrfToken(res);
+    const deleteResponse2 = await agent
+      .delete(`/deletequestion/${latestQuestion.id}`)
+      .send({
+        _csrf: csrfToken,
+      });
+    const parsedDeleteResponse2 = JSON.parse(deleteResponse2.text).success;
+    expect(parsedDeleteResponse2).toBe(false);
+  });
 });
