@@ -179,11 +179,7 @@
 <body>
     <%- include('heading.ejs') %>
     <span style="color:white">></span>
-        <a href="/electionpage" class="text-white">Home page</a>
-        <span style="color:white">></span>
-        <a href="/electionpage/<%= id %>" class="text-white">Election page</a>
-        <span style="color:white">></span>
-        <a href="/electionpage/<%= id %>/que" class="text-white">Questions page</a>
+        <a href="/electionpage/<%= id %>/que" class="text-white">Go Back</a>
     <div class="login-box">
         <h2>Create Question</h2>
         <form action="/electionpage/<%= id %>/que/createque" method="post">

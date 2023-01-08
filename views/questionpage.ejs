@@ -33,6 +33,12 @@
 </head>
 <body class="bg-gray-50">
     <%- include('heading.ejs') %>
+    <span style="color:black">></span>
+        <a href="/electionpage" class="text-black">Home page</a>
+        <span style="color:black">></span>
+        <a href="/electionpage/<%= id %>" class="text-black">Election</a>
+        <span style="color:black">></span>
+        <a href="/electionpage/<%= id %>/que" class="text-black">Questions</a>
     <div class="grid grid-cols-6">
         <div class="col-start-2 col-span-4">
             <div class="px-2 py-1">

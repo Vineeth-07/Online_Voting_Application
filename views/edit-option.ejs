@@ -200,6 +200,8 @@
 </head>
 <body>
     <%- include('heading.ejs') %>
+    <span style="color:white">></span>
+        <a href="/electionpage/<%= questionId %>/que/<%= questionId %>" class="text-white">Go Back</a>
     <div class="login-box">
         <h2>Edit Option</h2>
             <input type="hidden" name="_csrf" value="<%= csrfToken %>" />

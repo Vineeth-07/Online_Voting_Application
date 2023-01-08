@@ -102,7 +102,6 @@ app.get("/", (request, response) => {
   }
 });
 
-// index page
 app.get(
   "/index",
   connectEnsureLogin.ensureLoggedIn(),
@@ -114,7 +113,6 @@ app.get(
   }
 );
 
-// signup page
 app.get("/signup", (request, response) => {
   try {
     response.render("signup", {
@@ -126,7 +124,6 @@ app.get("/signup", (request, response) => {
   }
 });
 
-//signout
 app.get("/signout", (request, response, next) => {
   request.logout((error) => {
     if (error) {
@@ -137,7 +134,6 @@ app.get("/signout", (request, response, next) => {
   });
 });
 
-//login
 app.get("/login", (request, response) => {
   if (request.user) {
     return response.redirect("/electionpage");
@@ -148,7 +144,6 @@ app.get("/login", (request, response) => {
   });
 });
 
-//post method for admin signup
 app.post("/admin", async (request, response) => {
   if (request.body.firstName.length == 0) {
     request.flash("error", "Firstname can not be empty!");
@@ -190,7 +185,6 @@ app.post("/admin", async (request, response) => {
   }
 });
 
-//homepage of admin
 app.get(
   "/electionpage",
   connectEnsureLogin.ensureLoggedIn(),
@@ -217,7 +211,6 @@ app.get(
   }
 );
 
-//election creation page
 app.get(
   "/electionpage/addelection",
   connectEnsureLogin.ensureLoggedIn(),
@@ -267,7 +260,6 @@ app.post(
   }
 );
 
-//election page
 app.get(
   "/electionpage/:id",
   connectEnsureLogin.ensureLoggedIn(),
@@ -385,6 +377,8 @@ app.post(
       await Options.createOption({
         option: req.body.option,
         questionId: req.params.questionId,
+        electionId: req.params.electionId,
+        id: req.params.id,
       });
       return res.redirect(
         `/electionpage/${req.params.id}/que/${req.params.questionId}`
@@ -464,6 +458,7 @@ app.get(
         questionId: req.params.questionId,
         questionName: question.questionname,
         description: question.description,
+        id: req.params.id,
         csrfToken: req.csrfToken(),
       });
     } catch (err) {
