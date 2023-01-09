@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const csrf = require("tiny-csrf");
 const cookieParser = require("cookie-parser");
-const { admin, Election, questions, Options, Voters } = require("./models");
+const { admin, Election, questions, Options, VoterRel } = require("./models");
 const bodyParser = require("body-parser");
 const connectEnsureLogin = require("connect-ensure-login");
 const LocalStratergy = require("passport-local");
@@ -512,7 +512,7 @@ app.get(
   async (req, res) => {
     try {
       const election = await Election.retriveElection(req.params.electionId);
-      const voters = await Voters.retriveVoters(req.params.electionId);
+      const voters = await VoterRel.retriveVoters(req.params.electionId);
       if (req.accepts("html")) {
         return res.render("voters-manage", {
           title: election.electionName,
@@ -559,10 +559,10 @@ app.post(
     }
     const hashedPwd = await bcrypt.hash(req.body.password, saltRounds);
     try {
-      await Voters.addVoter({
+      await VoterRel.addVoter({
         voterid: req.body.voterid,
+        electionId: req.params.electionId,
         password: hashedPwd,
-        electionID: req.params.electionID,
       });
       return res.redirect(`/electionpage/${req.params.electionId}/voters`);
     } catch (err) {

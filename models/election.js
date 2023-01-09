@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "electionId",
       });
 
-      Election.hasMany(models.Voters, {
+      Election.hasMany(models.VoterRel, {
         foreignKey: "electionId",
       });
     }
