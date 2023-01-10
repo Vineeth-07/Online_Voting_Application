@@ -233,22 +233,23 @@ app.post(
       );
       return response.redirect("/electionpage/addelection");
     }
-    if (request.body.publicurl.length < 3) {
+    if (request.body.publicurl.trim().length < 3) {
       request.flash("error", "URL should contain atleast 3 characters");
       return response.redirect("/electionpage/addelection");
     }
-    let spaceCheck =
-      request.body.publicurl.includes(" ") ||
-      request.body.publicurl.includes("\n") ||
-      request.body.publicurl.includes("\t");
-    if (spaceCheck == true) {
-      request.flash("error", "URL should not contain spaces");
-      return response.redirect("/electionpage/addelection");
-    }
+    // let spaceCheck =
+    //   request.body.publicurl.includes(" ") ||
+    //   request.body.publicurl.includes("\n") ||
+    //   request.body.publicurl.includes("\t");
+    // if (spaceCheck == true) {
+    //   request.flash("error", "URL should not contain spaces");
+    //   return response.redirect("/electionpage/addelection");
+    // }
     try {
+      console.log(request.body.publicurl.trim());
       await Election.createElection({
         electionName: request.body.electionName,
-        publicurl: request.body.publicurl,
+        publicurl: request.body.publicurl.trim(),
         adminID: request.user.id,
       });
       return response.redirect("/electionpage");
