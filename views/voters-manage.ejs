@@ -15,8 +15,8 @@
     <title><%= title %></title>
     <script>
         var token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
-        function removeQuestion(id) {
-            fetch(`/deletequestion/${id}`, {
+        function removeVoter(id,electionId) {
+            fetch(`/${id}/${electionId}`, {
                 method: "delete",
                 headers: {"Content-Type":"application/json"},
                 body: JSON.stringify({
@@ -68,7 +68,7 @@
                                     </div>
                                     <% if (voters.length > 1) { %>
                                     <div class="rounded w-fit px-2 py-1 flex gap-2 cursor-pointer">                                    
-                                        <a onclick="" class="text-sm text-black">Delete voter</a>
+                                        <a onclick="removeVoter(<%= voters[i].id %>,<%=election.id%>)" class="text-sm text-black">Delete voter</a>
                                     </div>
                                     <% } %>
                                 </div>

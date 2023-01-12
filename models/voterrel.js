@@ -26,6 +26,15 @@ module.exports = (sequelize, DataTypes) => {
       return retriveVoters;
     }
 
+    static async removeVoter(id) {
+      let removeVoter = await this.destroy({
+        where: {
+          id,
+        },
+      });
+      return removeVoter;
+    }
+
     static associate(models) {
       // define association here
       VoterRel.belongsTo(models.Election, {

@@ -511,6 +511,7 @@ app.get(
           id: req.params.electionId,
           csrfToken: req.csrfToken(),
           voters,
+          election,
         });
       } else {
         return res.json({ voters });
@@ -544,7 +545,7 @@ app.post(
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
     if (req.body.password.length < 8) {
-      req.flash("error", "Password should contain atleast 8");
+      req.flash("error", "Password should contain atleast 8 characters");
       return res.redirect(
         `/electionpage/${req.params.electionId}/voters/votercreate`
       );
@@ -563,6 +564,20 @@ app.post(
       return res.redirect(
         `/electionpage/${req.params.electionId}/voters/votercreate`
       );
+    }
+  }
+);
+
+app.delete(
+  "/:id/:electionId",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    try {
+      const result = await VoterRel.removeVoter(req.params.id);
+      return res.json({ success: result === 1 });
+    } catch (err) {
+      console.log(err);
+      return res.status(422).json(err);
     }
   }
 );
