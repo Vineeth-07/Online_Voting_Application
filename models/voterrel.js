@@ -26,6 +26,16 @@ module.exports = (sequelize, DataTypes) => {
       return retriveVoters;
     }
 
+    static async retriveVoter(electionId) {
+      let retriveVoter = await this.findOne({
+        where: {
+          electionId,
+        },
+        order: [["id", "ASC"]],
+      });
+      return retriveVoter;
+    }
+
     static async removeVoter(id) {
       let removeVoter = await this.destroy({
         where: {
@@ -33,6 +43,20 @@ module.exports = (sequelize, DataTypes) => {
         },
       });
       return removeVoter;
+    }
+
+    static editPassword(Voterid, newpassword) {
+      let editPassword = this.update(
+        {
+          password: newpassword,
+        },
+        {
+          where: {
+            voterid: Voterid,
+          },
+        }
+      );
+      return editPassword;
     }
 
     static associate(models) {

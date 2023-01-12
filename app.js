@@ -582,4 +582,34 @@ app.delete(
   }
 );
 
+app.get(
+  "/:electionId/:voterID/edit",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    const election = await Election.findByPk(req.params.electionId);
+    const voter = await VoterRel.retriveVoter(req.params.electionId);
+    res.render("edit-voter-password", {
+      title: "Edit Voter Password",
+      electionId: req.params.electionId,
+      voter: voter,
+      election: election,
+      csrfToken: req.csrfToken(),
+    });
+  }
+);
+
+app.post(
+  "/:electionId/:voterID/edit",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    try {
+      await VoterRel.editPassword(req.params.voterID, req.body.password);
+      res.redirect(`/electionpage/${req.params.electionId}/voters`);
+    } catch (err) {
+      console.log(err);
+      return;
+    }
+  }
+);
+
 module.exports = app;
