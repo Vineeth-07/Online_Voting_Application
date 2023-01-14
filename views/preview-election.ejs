@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <style>
+        h3{text-align: center;}
+        h2{text-align: center;}
+        a{text-align: center;}
+    </style>
+    <title><%= title %></title>
+</head>
+<body>
+    <%- include('heading.ejs') %>
+    <h1 style="color:black">></span>
+        <a href="/electionpage" class="text-black">Home page</a>
+        <span style="color:black">></span>
+        <a href="/electionpage/<%= id %>" class="text-black">Election</a>
+    <h3 class="text-4xl my-4 font-medium"><%= election.electionName %></h3>
+    <h2 class="text-3xl my-4 ">Preview</h3>
+        <h2 class=" text-lg text-black flex gap-1"> Total Questions <span class="bg-gray-100 ml-2 px-2"><%= quelength %></span></h2>
+        <h2 class=" text-lg text-black flex gap-1"> Total Voters <span class="bg-gray-100 ml-2 px-2"><%= voterlength %></span></h2>
+        <div class="my-6 mx-10">
+            <div class="flex-auto">
+                <div class="mx-4">
+                    <div class="grid grid-cols-6">
+                        <div class="col-start-3 col-span-2">
+                            <% for (let i=0; i<questions.length; i++) { %>
+                                <div>
+                                    <h4 class="text-3xl my-2">Questions</h4>
+                                    <h5 class="text-3xl my-2"><%= i+1 %>. <%= questions[i].questionname %></h5>
+                                    <p class="text-gray-600">Description : <%= questions[i].description %></p>
+                                    <div class="pt-3 pl-5">
+                                        <% for (let j=0; j<options[i].length; j++) { %>
+                                          <div class="flex gap-2">
+                                            <input class="border-2 flex items-center border-black p-2" id="<%= questions[i].id %>-<%= options[i][j].id %>" type="radio" value="<%= options[i][j].id %>" name="<%= questions[i].id %>"/>
+                                <label for="<%= questions[i].id %>-<%= options[i][j].id %>"><%= options[i][j].option %></label>
+                            </div>
+                         <% } %>
+                    </div>
+                </div>
+              <% } %> 
+                <h4 class="text-3xl my-2"><%= (voterlength!=0)?"Voters":"" %></h4>
+              <% for (let i=0; i<voter.length; i++) { %>
+                <p class="text-bold"><%= i+1 %>. <%= voter[i].voterid %></p>
+                <% } %>
+          </div>
+        </div>
+    </div>
+</body>
+</html>

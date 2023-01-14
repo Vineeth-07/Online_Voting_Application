@@ -615,4 +615,31 @@ app.post(
   }
 );
 
+app.get(
+  "/:id/previewelection",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    const election = await Election.retriveElection(req.params.id);
+    const question = await questions.retriveQuestions(req.params.id);
+    const opt = [];
+    const quelength = question.length;
+    const voter = await VoterRel.retriveVoters(req.params.id);
+    for (let i = 0; i < quelength; i++) {
+      const list = await Options.retriveOptions(question[i].id);
+      opt.push(list);
+    }
+    res.render("preview-election", {
+      title: "Election Preview",
+      election: election,
+      questions: question,
+      options: opt,
+      quelength,
+      voter,
+      voterlength: voter.length,
+      id: req.params.id,
+      csrfToken: req.csrfToken(),
+    });
+  }
+);
+
 module.exports = app;
