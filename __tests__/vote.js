@@ -266,4 +266,33 @@ describe("Voting application test suite", function () {
       });
     expect(res.statusCode).toBe(302);
   });
+
+  test("Add Voter", async () => {
+    const agent = request.agent(server);
+    await login(agent, "vineeth@test.com", "123456789");
+    let res = await agent.get("/electionpage/addelection");
+    let csrfToken = extractCsrfToken(res);
+    await agent.post("/electionpage").send({
+      electionName: "election",
+      publicurl: "testurl",
+      _csrf: csrfToken,
+    });
+    const groupedElectionsResponse = await agent
+      .get("/electionpage")
+      .set("Accept", "application/json");
+    const parsedGroupedResponse = JSON.parse(groupedElectionsResponse.text);
+    const electionCount = parsedGroupedResponse.listOfElections.length;
+    const newElection =
+      parsedGroupedResponse.listOfElections[electionCount - 1];
+    res = await agent.get(`/electionpage/${newElection.id}/voters/votercreate`);
+    csrfToken = extractCsrfToken(res);
+    res = await agent
+      .post(`/electionpage/${newElection.id}/voters/votercreate`)
+      .send({
+        voterid: "Voter",
+        password: "Password1234",
+        _csrf: csrfToken,
+      });
+    expect(res.statusCode).toBe(302);
+  });
 });
