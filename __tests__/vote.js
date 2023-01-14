@@ -295,4 +295,65 @@ describe("Voting application test suite", function () {
       });
     expect(res.statusCode).toBe(302);
   });
+
+  test("Delete Voter", async () => {
+    const agent = request.agent(server);
+    await login(agent, "vineeth@test.com", "123456789");
+    let res = await agent.get("/electionpage/addelection");
+    let csrfToken = extractCsrfToken(res);
+    await agent.post("/electionpage").send({
+      electionName: "Test election",
+      publicurl: "testurl",
+      _csrf: csrfToken,
+    });
+    const groupedElectionsResponse = await agent
+      .get("/electionpage")
+      .set("Accept", "application/json");
+    const parsedGroupedResponse = JSON.parse(groupedElectionsResponse.text);
+    const electionCount = parsedGroupedResponse.listOfElections.length;
+    const newElection =
+      parsedGroupedResponse.listOfElections[electionCount - 1];
+    res = await agent.get(`/electionpage/${newElection.id}/voters/votercreate`);
+    csrfToken = extractCsrfToken(res);
+    res = await agent
+      .post(`/electionpage/${newElection.id}/voters/votercreate`)
+      .send({
+        voterid: "Voter1",
+        password: "password123",
+        _csrf: csrfToken,
+      });
+    res = await agent.get(`/electionpage/${newElection.id}/voters/create`);
+    csrfToken = extractCsrfToken(res);
+    res = await agent
+      .post(`/electionpage/${newElection.id}/voters/votercreate`)
+      .send({
+        voterid: "Voter2",
+        password: "password123",
+        _csrf: csrfToken,
+      });
+    const groupedVotersResponse = await agent
+      .get(`/electionpage/${newElection.id}/voters`)
+      .set("Accept", "application/json");
+    const parsedVotersGroupedResponse = JSON.parse(groupedVotersResponse.text);
+    const votersCount = parsedVotersGroupedResponse.voters.length;
+    const latestVoter = parsedVotersGroupedResponse.voters[votersCount - 1];
+    res = await agent.get(`/electionpage/${newElection.id}/voters`);
+    csrfToken = extractCsrfToken(res);
+    const deleteResponse = await agent
+      .delete(`/${latestVoter.id}/${newElection.id}`)
+      .send({
+        _csrf: csrfToken,
+      });
+    const parsedDeleteResponse = JSON.parse(deleteResponse.text).success;
+    expect(parsedDeleteResponse).toBe(true);
+    res = await agent.get(`/electionpage/${newElection.id}/voters`);
+    csrfToken = extractCsrfToken(res);
+    const deleteResponse2 = await agent
+      .delete(`/${latestVoter.id}/${newElection.id}`)
+      .send({
+        _csrf: csrfToken,
+      });
+    const parsedDeleteResponse2 = JSON.parse(deleteResponse2.text).success;
+    expect(parsedDeleteResponse2).toBe(false);
+  });
 });
