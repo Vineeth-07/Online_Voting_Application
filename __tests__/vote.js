@@ -356,4 +356,26 @@ describe("Voting application test suite", function () {
     const parsedDeleteResponse2 = JSON.parse(deleteResponse2.text).success;
     expect(parsedDeleteResponse2).toBe(false);
   });
+
+  test("Preview election", async () => {
+    const agent = request.agent(server);
+    await login(agent, "vineeth@test.com", "123456789");
+    let res = await agent.get("/electionpage/addelection");
+    let csrfToken = extractCsrfToken(res);
+    await agent.post("/electionpage").send({
+      electionName: "Election",
+      publicurl: "urltest",
+      _csrf: csrfToken,
+    });
+    const ElectionsResponse = await agent
+      .get("/electionpage")
+      .set("Accept", "application/json");
+    const parsedElectionsResponse = JSON.parse(ElectionsResponse.text);
+    const electionCount = parsedElectionsResponse.listOfElections.length;
+    const newElection =
+      parsedElectionsResponse.listOfElections[electionCount - 1];
+    res = await agent.get(`/${newElection.id}/previewelection`);
+    csrfToken = extractCsrfToken(res);
+    expect(res.statusCode).toBe(200);
+  });
 });
