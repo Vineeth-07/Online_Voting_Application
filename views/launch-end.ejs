@@ -11,6 +11,15 @@
         h2{text-align: center;}
         a{text-align: center;}
         p{text-align: center;}
+        .blink {
+            animation: blinker 2s linear infinite;
+            font-family: sans-serif;
+        }
+        @keyframes blinker {
+            50% {
+                opacity: 0;
+            }
+        }
     </style>
     <title><%= title %></title>
 </head>
@@ -25,8 +34,10 @@
     </div>
     <h3 class="text-4xl my-4 font-medium"><%= ele.electionName %></h3>
     <% if(ele.launched) { %>
-        <p class="bg-green-200 my-3 list-none rounded px-4 py-2">Election is Live</p>
-        <h5 class="">Voters can visit this URL to vote : <a href="/election/<%= publicurl %>" style="color:blue">https://vineeth-voting-application.onrender.com/election/<%= publicurl %></a></h5>
+        <h5 class="bg-green-200 my-3 list-none rounded px-4 py-2 "> <p class="blink">* Election is Live *</p> </h5>
+        <div class="flex gap-1 mx-10 mt-6 ">
+            <h5 class="">Voters can visit this URL to vote : <a href="/election/<%= publicurl %>" style="color:blue">https://vineeth-voting-application.onrender.com/election/<%= publicurl %></a></h5>
+        </div>
         <% } %>
     <div class="my-6 mx-10 ">
                 <h2 class=" text-lg text-black flex gap-1"> Questions <span class="bg-gray-100 ml-2 px-2"><%= noOfQuestions %></span></h2>
@@ -43,6 +54,6 @@
                 <% for(var i=0; i<messages.error.length; i++) { %>
                   <p class="bg-red-200 my-3 list-none rounded px-4 py-2"><%= messages.error[i] %></p>
                 <% } %>
-              <% } %>
+            <% } %>
 </body>
 </html>
