@@ -317,6 +317,10 @@ app.get(
   async (req, res) => {
     const ques = await await questions.retriveQuestions(req.params.id);
     const election = await Election.findByPk(req.params.id);
+    if (election.launched) {
+      req.flash("error", "Cannot modify questions while election is running!");
+      return res.redirect(`/electionpage/${req.params.id}`);
+    }
     if (req.accepts("html")) {
       res.render("questions-page", {
         title: election.electionName,
