@@ -29,6 +29,11 @@
                 <h2 class=" text-lg text-black flex gap-1"> Voters <span class="bg-gray-100 ml-2 px-2"><%= noOfVoters %></span></h2>
                 <a href="/electionpage/<%= id %>/voters" class="py-1 hover:text-green-600 text-black">-> Manage Voters</a>
             </div>
+            <div class="flex gap-1 mx-10 mt-6 ">
+                <div class="bg-black rounded w-fit px-2 py-1 hover:bg-black">
+                    <a href="/<%= id %>/launch" class="text-white ">Launch Election</a>
+                </div>
+            </div>
         </div>
     </div>
 </body>

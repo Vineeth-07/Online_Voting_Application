@@ -642,4 +642,18 @@ app.get(
   }
 );
 
+app.get(
+  "/:id/launch",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    try {
+      await Election.launchElection(req.params.id);
+      return res.redirect(`/electionpage/${req.params.id}`);
+    } catch (error) {
+      console.log(error);
+      return res.send(error);
+    }
+  }
+);
+
 module.exports = app;

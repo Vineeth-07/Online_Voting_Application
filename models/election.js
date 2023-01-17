@@ -35,6 +35,36 @@ module.exports = (sequelize, DataTypes) => {
       return retriveElection;
     }
 
+    static launchElection(id) {
+      let launchElection = this.update(
+        {
+          launched: true,
+          ended: false,
+        },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      return launchElection;
+    }
+
+    static endElection(id) {
+      let endElection = this.update(
+        {
+          launched: false,
+          ended: true,
+        },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      return endElection;
+    }
+
     static associate(models) {
       // define association here
       Election.belongsTo(models.admin, {
