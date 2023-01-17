@@ -268,6 +268,8 @@ app.get(
         noOfQuestions: ques.length,
         voters,
         noOfVoters: voters.length,
+        publicurl: ele.publicurl,
+        electionName: ele.electionName.trim(),
         csrfToken: req.csrfToken(),
       });
     } catch (err) {

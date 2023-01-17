@@ -24,6 +24,10 @@
         </div>
     </div>
     <h3 class="text-4xl my-4 font-medium"><%= ele.electionName %></h3>
+    <% if(ele.launched) { %>
+        <p class="bg-green-200 my-3 list-none rounded px-4 py-2">Election is Live</p>
+        <h5 class="">Voters can visit this URL to vote : <a href="/election/<%= publicurl %>" style="color:blue">https://vineeth-voting-application.onrender.com/election/<%= publicurl %></a></h5>
+        <% } %>
     <div class="my-6 mx-10 ">
                 <h2 class=" text-lg text-black flex gap-1"> Questions <span class="bg-gray-100 ml-2 px-2"><%= noOfQuestions %></span></h2>
                 <a href="/electionpage/<%= id %>/que" class="py-1 hover:text-green-600 text-black">-> Manage Questions</a>
