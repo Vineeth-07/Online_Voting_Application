@@ -646,6 +646,28 @@ app.get(
   "/:id/launch",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
+    const voter = await VoterRel.retriveVoters(req.params.id);
+    const que = await questions.findAll({
+      where: { electionId: req.params.id },
+    });
+    if (que.length < 1) {
+      req.flash("error", "Add atleast one question to launch election!");
+      return res.redirect(`/electionpage/${req.params.id}`);
+    }
+    for (let i = 0; i < que.length; i++) {
+      const opt = await Options.retriveOptions(que[i].id);
+      if (opt.length <= 1) {
+        req.flash(
+          "error",
+          "Add atleast two options to the questions before launch!"
+        );
+        return res.redirect(`/electionpage/${req.params.id}`);
+      }
+    }
+    if (voter.length <= 1) {
+      req.flash("error", "Add atleast two voters to lauch election");
+      return res.redirect(`/electionpage/${req.params.id}`);
+    }
     try {
       await Election.launchElection(req.params.id);
       return res.redirect(`/electionpage/${req.params.id}`);
