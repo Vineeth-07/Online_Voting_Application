@@ -70,6 +70,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       voterid: DataTypes.STRING,
       password: DataTypes.STRING,
+      case: DataTypes.STRING,
     },
     {
       sequelize,

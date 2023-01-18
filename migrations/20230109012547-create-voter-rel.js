@@ -18,6 +18,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      case: {
+        type: Sequelize.STRING,
+        defaultValue: "voter",
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

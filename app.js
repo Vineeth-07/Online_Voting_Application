@@ -63,22 +63,60 @@ passport.use(
   )
 );
 
+passport.use(
+  "voter-local",
+  new LocalStratergy(
+    {
+      usernameField: "voterid",
+      passwordField: "password",
+    },
+    (username, password, done) => {
+      VoterRel.findOne({
+        where: { voterid: username },
+      })
+        .then(async (user) => {
+          const result = await bcrypt.compare(password, user.password);
+          if (result) {
+            return done(null, user);
+          } else {
+            return done(null, false, { message: "Invalid password" });
+          }
+        })
+        .catch(() => {
+          return done(null, false, {
+            message: "Invalid Voter ID",
+          });
+        });
+    }
+  )
+);
+
 app.set("view engine", "ejs");
 // eslint-disable-next-line no-undef
 app.use(express.static(path.join(__dirname, "public")));
+
 passport.serializeUser((user, done) => {
   done(null, { id: user.id, case: user.case });
 });
-
 passport.deserializeUser((id, done) => {
-  admin
-    .findByPk(id.id)
-    .then((user) => {
-      done(null, user);
-    })
-    .catch((error) => {
-      done(error, null);
-    });
+  if (id.case === "admin") {
+    admin
+      .findByPk(id.id)
+      .then((user) => {
+        done(null, user);
+      })
+      .catch((error) => {
+        done(error, null);
+      });
+  } else if (id.case === "voter") {
+    VoterRel.findByPk(id.id)
+      .then((user) => {
+        done(null, user);
+      })
+      .catch((error) => {
+        done(error, null);
+      });
+  }
 });
 
 app.post(
@@ -89,6 +127,17 @@ app.post(
   }),
   async (request, response) => {
     return response.redirect("/electionpage");
+  }
+);
+
+app.post(
+  "/election/:publicurl/voter",
+  passport.authenticate("voter-local", {
+    failureFlash: true,
+    failureRedirect: "back",
+  }),
+  async (request, response) => {
+    return response.redirect(`/election/${request.params.publicurl}`);
   }
 );
 
