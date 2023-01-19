@@ -238,24 +238,28 @@ app.get(
   "/electionpage",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
-    let uid = await admin.findByPk(req.user.id);
-    let name = uid.dataValues.firstName;
-    try {
-      const listOfElections = await Election.retriveElections(req.user.id);
-      if (req.accepts("html")) {
-        res.render("homepage", {
-          title: "Online Voting Homepage",
-          uid,
-          userName: name,
-          listOfElections,
-          noOfElections: listOfElections.length,
-        });
-      } else {
-        return res.json({ listOfElections });
+    if (req.user.case === "admin") {
+      let uid = await admin.findByPk(req.user.id);
+      let name = uid.dataValues.firstName;
+      try {
+        const listOfElections = await Election.retriveElections(req.user.id);
+        if (req.accepts("html")) {
+          res.render("homepage", {
+            title: "Online Voting Homepage",
+            uid,
+            userName: name,
+            listOfElections,
+            noOfElections: listOfElections.length,
+          });
+        } else {
+          return res.json({ listOfElections });
+        }
+      } catch (error) {
+        console.log(error);
+        return res.status(422).json(error);
       }
-    } catch (error) {
-      console.log(error);
-      return res.status(422).json(error);
+    } else {
+      return res.redirect("/");
     }
   }
 );
@@ -732,5 +736,55 @@ app.get(
     }
   }
 );
+
+app.get("/election/:publicurl/voter", async (req, res) => {
+  try {
+    const election = await Election.retriveUrl(req.params.publicurl);
+    return res.render("voter-login", {
+      title: "Voter Login",
+      publicurl: req.params.publicurl,
+      electionId: election.id,
+      csrfToken: req.csrfToken(),
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(422).json(error);
+  }
+});
+
+app.get("/election/:publicurl", async (req, res) => {
+  try {
+    const election = await Election.retriveUrl(req.params.publicurl);
+    const Questions = await questions.retriveQuestions(election.id);
+    let options = [];
+    for (let question in Questions) {
+      options.push(await Options.retriveOptions(Questions[question].id));
+    }
+    if (req.accepts("html")) {
+      return res.render("voter-response", {
+        title: election.electionName,
+        electionId: election.id,
+        Questions,
+        options,
+        publicurl: req.params.publicurl,
+        csrfToken: req.csrfToken(),
+      });
+    } else {
+      return res.json({
+        Questions,
+        options,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(422).json(error);
+  }
+});
+
+// app.post("/election/:publicurl", async (req, res) => {
+//   try{
+//     const election = await Election.retriveUrl(req.params.publicurl);
+//   }
+// })
 
 module.exports = app;
