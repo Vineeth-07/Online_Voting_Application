@@ -87,6 +87,10 @@ module.exports = (sequelize, DataTypes) => {
       Election.hasMany(models.VoterRel, {
         foreignKey: "electionId",
       });
+      Election.hasMany(models.answer, {
+        foreignKey: "electionId",
+        onDelete: "CASCADE",
+      });
     }
   }
   Election.init(

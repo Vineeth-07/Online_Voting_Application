@@ -64,6 +64,10 @@ module.exports = (sequelize, DataTypes) => {
       VoterRel.belongsTo(models.Election, {
         foreignKey: "electionId",
       });
+      VoterRel.hasMany(models.answer, {
+        foreignKey: "voterId",
+        onDelete: "CASCADE",
+      });
     }
   }
   VoterRel.init(
@@ -71,6 +75,7 @@ module.exports = (sequelize, DataTypes) => {
       voterid: DataTypes.STRING,
       password: DataTypes.STRING,
       case: DataTypes.STRING,
+      voted: DataTypes.BOOLEAN,
     },
     {
       sequelize,

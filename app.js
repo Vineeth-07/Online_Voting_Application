@@ -2,7 +2,14 @@ const express = require("express");
 const app = express();
 const csrf = require("tiny-csrf");
 const cookieParser = require("cookie-parser");
-const { admin, Election, questions, Options, VoterRel } = require("./models");
+const {
+  admin,
+  Election,
+  questions,
+  Options,
+  VoterRel,
+  answer,
+} = require("./models");
 const bodyParser = require("body-parser");
 const connectEnsureLogin = require("connect-ensure-login");
 const LocalStratergy = require("passport-local");
@@ -781,10 +788,25 @@ app.get("/election/:publicurl", async (req, res) => {
   }
 });
 
-// app.post("/election/:publicurl", async (req, res) => {
-//   try{
-//     const election = await Election.retriveUrl(req.params.publicurl);
-//   }
-// })
+app.post("/election/:publicurl", async (req, res) => {
+  try {
+    const election = await Election.retriveUrl(req.params.publicurl);
+    let Questions = await questions.retriveQuestions(election.id);
+    for (let que of Questions) {
+      let qid = `q-${que.id}`;
+      let choosenOption = req.body[qid];
+      await answer.addAnswer({
+        voterId: req.user.id,
+        electionId: election.id,
+        questionId: que.id,
+        choosenOption: choosenOption,
+      });
+      return res.redirect(`/election/${req.params.publicurl}/results`);
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(422).json(error);
+  }
+});
 
 module.exports = app;

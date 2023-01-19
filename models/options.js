@@ -63,6 +63,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "questionId",
         onDelete: "CASCADE",
       });
+      Options.hasMany(models.answer, {
+        foreignKey: "choosenOption",
+        onDelete: "CASCADE",
+      });
     }
   }
   Options.init(

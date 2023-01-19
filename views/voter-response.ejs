@@ -16,6 +16,7 @@
 <body>
     <h2 class="text-3xl my-4 ">Vote for below Questions...</h3>
         <form action="/election/<%= publicurl %>" method="post">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <div class="flex-auto">
                 <div class="mx-4">
                     <div class="grid grid-cols-6">
@@ -27,7 +28,7 @@
                                     <div class="pt-3 pl-5">
                                         <% for (let j=0; j<options[i].length; j++) { %>
                                           <div class="flex gap-2">
-                                            <input class="border-2 flex items-center border-black p-2" id="<%= Questions[i].id %>-<%= options[i][j].id %>" type="radio" value="<%= options[i][j].id %>" name="<%= Questions[i].id %>"/>
+                                            <input type="radio" id="<%= options[i][j].id %>" class="cursor-pointer" name="q-<%= Questions[i].id %>" value="<%= options[i][j].id %>" required/>
                                 <label for="<%= Questions[i].id %>-<%= options[i][j].id %>"><%= options[i][j].option %></label>
                             </div>
                          <% } %>
