@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <style>
+        h3{text-align: center;}
+        h2{text-align: center;}
+        a{text-align: center;}
+    </style>
+    <title><%= title %></title>
+</head>
+<body>
+    <h2 class="text-3xl my-4 ">Vote for below Questions...</h3>
+        <form action="/election/<%= publicurl %>" method="post">
+            <div class="flex-auto">
+                <div class="mx-4">
+                    <div class="grid grid-cols-6">
+                        <div class="col-start-3 col-span-2">
+                            <% for (let i=0; i<Questions.length; i++) { %>
+                                <div>
+                                    <h5 class="text-3xl my-2"><%= i+1 %>. <%= Questions[i].questionname %></h5>
+                                    <p class="text-gray-600">Description : <%= Questions[i].description %></p>
+                                    <div class="pt-3 pl-5">
+                                        <% for (let j=0; j<options[i].length; j++) { %>
+                                          <div class="flex gap-2">
+                                            <input class="border-2 flex items-center border-black p-2" id="<%= Questions[i].id %>-<%= options[i][j].id %>" type="radio" value="<%= options[i][j].id %>" name="<%= Questions[i].id %>"/>
+                                <label for="<%= Questions[i].id %>-<%= options[i][j].id %>"><%= options[i][j].option %></label>
+                            </div>
+                         <% } %>
+                    </div>
+                </div>
+              <% } %> 
+              <button type="submit" class="bg-black rounded w-fit px-2 py-1 hover:bg-black text-white">Submit</button>
+          </div>
+        </div>
+    </div>
+</div>
+ </form>    
+ <% if(messages && messages.error && messages.error.length > 0)  { %>
+    <% for(var i=0; i<messages.error.length; i++) { %>
+      <p class="bg-red-200 my-3 list-none rounded px-4 py-2"><%= messages.error[i] %></p>
+    <% } %>
+<% } %> 
+</body>
+</html>
