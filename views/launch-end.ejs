@@ -50,6 +50,20 @@
                     <a href="/<%= id %>/launch" class="text-white ">Launch Election</a>
                 </div>
             </div> 
+            <% if(ele.launched) { %>
+            <div class="flex gap-1 mx-10 mt-6 ">
+                <div class="bg-black rounded w-fit px-2 py-1 hover:bg-black">
+                    <a href="/<%= id %>/previewresult" class="text-white ">Preview Result</a>
+                </div>
+            </div> 
+            <% } %>
+            <% if(ele.launched) { %>
+                <div class="flex gap-1 mx-10 mt-6 ">
+                    <div class="bg-black rounded w-fit px-2 py-1 hover:bg-black">
+                        <a href="/<%= id %>/end" class="text-white ">End Election</a>
+                    </div>
+                </div> 
+                <% } %>
             <% if(messages && messages.error && messages.error.length > 0)  { %>
                 <% for(var i=0; i<messages.error.length; i++) { %>
                   <p class="bg-red-200 my-3 list-none rounded px-4 py-2"><%= messages.error[i] %></p>

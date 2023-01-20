@@ -16,6 +16,27 @@ module.exports = (sequelize, DataTypes) => {
       });
       return addAnswer;
     }
+
+    static async retriveAnswers(electionId) {
+      let retriveAnswers = await this.findAll({
+        where: {
+          electionId,
+        },
+      });
+      return retriveAnswers;
+    }
+
+    static async retriveOptionCount({ electionId, choosenOption, questionId }) {
+      let retriveOptionCount = await this.count({
+        where: {
+          electionId,
+          choosenOption,
+          questionId,
+        },
+      });
+      return retriveOptionCount;
+    }
+
     static associate(models) {
       // define association here
       answer.belongsTo(models.Election, {

@@ -709,6 +709,59 @@ app.get(
 );
 
 app.get(
+  "/:id/previewresult",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    try {
+      const election = await Election.retriveElection(req.params.id);
+      const Questions = await questions.retriveQuestions(election.id);
+      const answers = await answer.retriveAnswers(election.id);
+      let winners = [];
+      let options = [];
+      let optionLabels = [];
+      let optionsCount = [];
+      for (let question in Questions) {
+        let opts = await Options.retriveOptions(Questions[question].id);
+        options.push(opts);
+        let opts_count = [];
+        let opts_labels = [];
+        for (let opt in opts) {
+          opts_labels.push(opts[opt].option);
+          opts_count.push(
+            await answer.retriveOptionCount({
+              electionId: election.id,
+              choosenOption: opts[opt].id,
+              questionId: Questions[question].id,
+            })
+          );
+        }
+        winners.push(Math.max.apply(Math, opts_count));
+        optionLabels.push(opts_labels);
+        optionsCount.push(opts_count);
+      }
+      const voted = await VoterRel.totalVoted(election.id);
+      const notvoted = await VoterRel.totalNotVoted(election.id);
+      return res.render("preview-result", {
+        electionName: election.electionName,
+        answers,
+        Questions,
+        winners,
+        options,
+        optionsCount,
+        id: req.params.electionId,
+        optionLabels,
+        voted,
+        notvoted,
+        totalVoters: voted + notvoted,
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(422).json(err);
+    }
+  }
+);
+
+app.get(
   "/:id/launch",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
@@ -801,11 +854,64 @@ app.post("/election/:publicurl", async (req, res) => {
         questionId: que.id,
         choosenOption: choosenOption,
       });
-      return res.redirect(`/election/${req.params.publicurl}/results`);
     }
+    await VoterRel.voted(req.user.id);
+    req.flash("error", "Voted successfully!");
+    return res.redirect(`/election/${req.params.publicurl}/results`);
   } catch (error) {
     console.log(error);
     return res.status(422).json(error);
+  }
+});
+
+app.get("/election/:publicurl/results", async (req, res) => {
+  try {
+    const election = await Election.retriveUrl(req.params.publicurl);
+    if (!election.ended) {
+      return res.render("endpage");
+    }
+    const Questions = await questions.retriveQuestions(election.id);
+    const answers = await answer.retriveAnswers(election.id);
+    let winners = [];
+    let options = [];
+    let optionLabels = [];
+    let optionsCount = [];
+    for (let question in Questions) {
+      let opts = await Options.retriveOptions(Questions[question].id);
+      options.push(opts);
+      let opts_count = [];
+      let opts_labels = [];
+      for (let opt in opts) {
+        opts_labels.push(opts[opt].option);
+        opts_count.push(
+          await answer.retriveOptionCount({
+            electionId: election.id,
+            choosenOption: opts[opt].id,
+            questionId: Questions[question].id,
+          })
+        );
+      }
+      winners.push(Math.max.apply(Math, opts_count));
+      optionLabels.push(opts_labels);
+      optionsCount.push(opts_count);
+    }
+    const voted = await VoterRel.totalVoted(election.id);
+    const notvoted = await VoterRel.totalNotVoted(election.id);
+    return res.render("results", {
+      electionName: election.electionName,
+      answers,
+      Questions,
+      winners,
+      options,
+      optionsCount,
+      optionLabels,
+      voted,
+      notvoted,
+      totalVoters: voted + notvoted,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(422).json(err);
   }
 });
 

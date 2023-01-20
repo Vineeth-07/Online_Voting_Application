@@ -59,6 +59,49 @@ module.exports = (sequelize, DataTypes) => {
       return editPassword;
     }
 
+    static async voted(id) {
+      let voted = await this.update(
+        {
+          voted: true,
+        },
+        {
+          where: {
+            id,
+          },
+        }
+      );
+      return voted;
+    }
+
+    static async totalVoters(electionId) {
+      let totalVoters = await this.count({
+        where: {
+          electionId,
+        },
+      });
+      return totalVoters;
+    }
+
+    static async totalVoted(electionId) {
+      let totalVoted = await this.count({
+        where: {
+          electionId,
+          voted: true,
+        },
+      });
+      return totalVoted;
+    }
+
+    static async totalNotVoted(electionId) {
+      let totalNotVoted = await this.count({
+        where: {
+          electionId,
+          voted: false,
+        },
+      });
+      return totalNotVoted;
+    }
+
     static associate(models) {
       // define association here
       VoterRel.belongsTo(models.Election, {

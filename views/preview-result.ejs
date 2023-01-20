@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>
+    <%= electionName %> Preview Result
+  </title>
+  <style>
+    h3{text-align: center;}
+  </style>
+</head>
+<body >
+  <%- include('heading.ejs') %>
+  <span style="color:black">></span>
+    <a href="/electionpage" class="text-black">Home page</a>
+    <span style="color:black">></span>
+        <a href="/electionpage/<%= id %>" class="text-black">Election</a>
+    <h3 class="text-4xl my-4 font-medium"><%= electionName %> Results</h3>
+    <div class="my-6 mx-10 ">
+        <h2 class=" text-lg text-black flex gap-1"> Total Voters <span class="bg-gray-100 ml-2 px-2"><%= totalVoters %></span></h2>
+        <h2 class=" text-lg text-black flex gap-1"> Completed Voters <span class="bg-gray-100 ml-2 px-2"><%= voted %></span></h2>
+        <h2 class=" text-lg text-black flex gap-1"> Pending Voters <span class="bg-gray-100 ml-2 px-2"><%= notvoted %></span></h2>
+        <br>
+        <h4 class="text-4xl  font-semibold">Questions :</h4>
+        <br>
+        <% for(let i=0; i<Questions.length; i++) { %>
+            <h4 class="text-2xl  font-semibold"><%= i+1 %>. <%= Questions[i].questionname %></h4>
+            <h2>Description : <%= Questions[i].description %></h2>
+            <br>
+            <% for(let j=0; j<options[i].length; j++) { %>
+                <% if (optionsCount[i][j]===winners[i]) {%>
+                        <span>Current Winner "<%= options[i][j].option %>" leading with highest votes </span>
+                              <% } %>
+                              <h2 class=" text-lg text-black flex gap-1"> -> <%= options[i][j].option %> got <span class="bg-gray-100 ml-2 px-2"><%= optionsCount[i][j] %></span> votes</h2> 
+                    <% } %>
+            <% } %>
+    </div>
+</body>
+</html>
