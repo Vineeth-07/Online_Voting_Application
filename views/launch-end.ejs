@@ -39,18 +39,26 @@
             <h5 class="">Voters can visit this URL to vote : <a href="/election/<%= publicurl %>/voter" style="color:blue">https://vineeth-voting-application.onrender.com/election/<%= publicurl %></a></h5>
         </div>
         <% } %>
+        <% if(ele.ended) { %>
+            <h5 class="bg-red-200 my-3 list-none rounded px-4 py-2 "> <p>Election ended </p> </h5>
+            <div class="flex gap-1 mx-10 mt-6 ">
+                <h5 class="">Voters can visit this URL to see results : <a href="/election/<%= publicurl %>/voter" style="color:blue">https://vineeth-voting-application.onrender.com/election/<%= publicurl %></a></h5>
+            </div>
+            <% } %>
     <div class="my-6 mx-10 ">
                 <h2 class=" text-lg text-black flex gap-1"> Questions <span class="bg-gray-100 ml-2 px-2"><%= noOfQuestions %></span></h2>
                 <a href="/electionpage/<%= id %>/que" class="py-1 hover:text-green-600 text-black">-> Manage Questions</a>
                 <h2 class=" text-lg text-black flex gap-1"> Voters <span class="bg-gray-100 ml-2 px-2"><%= noOfVoters %></span></h2>
                 <a href="/electionpage/<%= id %>/voters" class="py-1 hover:text-green-600 text-black">-> Manage Voters</a>
             </div>
+            <% if(!ele.launched && !ele.ended) { %>
             <div class="flex gap-1 mx-10 mt-6 ">
                 <div class="bg-black rounded w-fit px-2 py-1 hover:bg-black">
                     <a href="/<%= id %>/launch" class="text-white ">Launch Election</a>
                 </div>
             </div> 
-            <% if(ele.launched) { %>
+            <% } %>
+            <% if((ele.launched && !ele.ended) || (!ele.launched && ele.ended) ) { %>
             <div class="flex gap-1 mx-10 mt-6 ">
                 <div class="bg-black rounded w-fit px-2 py-1 hover:bg-black">
                     <a href="/<%= id %>/previewresult" class="text-white ">Preview Result</a>
