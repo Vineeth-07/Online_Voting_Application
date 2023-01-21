@@ -60,11 +60,11 @@ passport.use(
           if (result) {
             return done(null, user);
           } else {
-            return done(null, false, { message: "Invalid Password!!!" });
+            return done(null, false, { message: "Invalid Password!" });
           }
         })
         .catch(() => {
-          return done(null, false, { message: "Invalid Email-ID!!!!" });
+          return done(null, false, { message: "Invalid Email-ID!" });
         });
     }
   )
@@ -383,6 +383,10 @@ app.get(
       req.flash("error", "Cannot modify questions while election is running!");
       return res.redirect(`/electionpage/${req.params.id}`);
     }
+    if (election.ended) {
+      req.flash("error", "Cannot modify questions after election has ended!");
+      return res.redirect(`/electionpage/${req.params.id}`);
+    }
     if (req.accepts("html")) {
       res.render("questions-page", {
         title: election.electionName,
@@ -574,6 +578,10 @@ app.get(
     try {
       const election = await Election.retriveElection(req.params.electionId);
       const voters = await VoterRel.retriveVoters(req.params.electionId);
+      if (election.ended) {
+        req.flash("error", "Cannot modify voters after election has ended!");
+        return res.redirect(`/electionpage/${req.params.electionId}`);
+      }
       if (req.accepts("html")) {
         return res.render("voters-manage", {
           title: election.electionName,
@@ -800,6 +808,9 @@ app.get(
 app.get("/election/:publicurl/voter", async (req, res) => {
   try {
     const election = await Election.retriveUrl(req.params.publicurl);
+    if (election.ended) {
+      return res.redirect(`/election/${election.publicurl}/results`);
+    }
     return res.render("voter-login", {
       title: "Voter Login",
       publicurl: req.params.publicurl,
@@ -815,6 +826,12 @@ app.get("/election/:publicurl/voter", async (req, res) => {
 app.get("/election/:publicurl", async (req, res) => {
   try {
     const election = await Election.retriveUrl(req.params.publicurl);
+    if (election.ended) {
+      return res.redirect(`/election/${election.publicurl}/results`);
+    }
+    if (req.user.voted) {
+      return res.redirect(`/election/${election.publicurl}/results`);
+    }
     const Questions = await questions.retriveQuestions(election.id);
     let options = [];
     for (let question in Questions) {
@@ -844,6 +861,9 @@ app.get("/election/:publicurl", async (req, res) => {
 app.post("/election/:publicurl", async (req, res) => {
   try {
     const election = await Election.retriveUrl(req.params.publicurl);
+    if (req.user.voted) {
+      return res.redirect(`/election/${election.publicurl}/results`);
+    }
     let Questions = await questions.retriveQuestions(election.id);
     for (let que of Questions) {
       let qid = `q-${que.id}`;
