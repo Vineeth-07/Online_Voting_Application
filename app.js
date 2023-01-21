@@ -915,4 +915,14 @@ app.get("/election/:publicurl/results", async (req, res) => {
   }
 });
 
+app.get("/:id/end", connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
+  try {
+    await Election.endElection(req.params.id);
+    return res.redirect(`/electionpage/${req.params.id}`);
+  } catch (err) {
+    console.log(err);
+    return res.send(err);
+  }
+});
+
 module.exports = app;

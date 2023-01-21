@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -17,8 +16,6 @@
   <%- include('heading.ejs') %>
   <span style="color:black">></span>
     <a href="/electionpage" class="text-black">Home page</a>
-    <span style="color:black">></span>
-        <a href="/electionpage/<%= id %>" class="text-black">Election</a>
     <h3 class="text-4xl my-4 font-medium"><%= electionName %> Results</h3>
     <div class="my-6 mx-10 ">
         <h2 class=" text-lg text-black flex gap-1"> Total Voters <span class="bg-gray-100 ml-2 px-2"><%= totalVoters %></span></h2>
