@@ -378,4 +378,29 @@ describe("Voting application test suite", function () {
     csrfToken = extractCsrfToken(res);
     expect(res.statusCode).toBe(200);
   });
+
+  test("Launching election", async () => {
+    const agent = request.agent(server);
+    await login(agent, "vineeth@test.com", "123456789");
+    res = await agent.get("/electionpage/addelection");
+    csrfToken = extractCsrfToken(res);
+    await agent.post("/electionpage").send({
+      electionName: "Election",
+      publicurl: "urlLaunch",
+      _csrf: csrfToken,
+    });
+    const ElectionsResponse = await agent
+      .get("/electionpage")
+      .set("Accept", "Application/json");
+    const parsedElectionsResponse = JSON.parse(ElectionsResponse.text);
+    const electionCount = parsedElectionsResponse.listOfElections.length;
+    const newElection =
+      parsedElectionsResponse.listOfElections[electionCount - 1];
+    res = await agent.get(`/electionpage/${newElection.id}`);
+    const token = extractCsrfToken(res);
+    const result = await agent.get(`/${newElection.id}/launch`).send({
+      _csrf: token,
+    });
+    expect(result.statusCode).toBe(302);
+  });
 });
