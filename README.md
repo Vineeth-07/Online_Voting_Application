@@ -10,4 +10,4 @@ through using publicURL.
 At last admin ends the election and checks the results.
 ##Voter : Voter visits the publicURL given by the admin.
 Login by using default credentials by admin.
-After login voter can be albe to vote for the question and submit the result.
+After login voter can be able to vote for the question and submit the result.
