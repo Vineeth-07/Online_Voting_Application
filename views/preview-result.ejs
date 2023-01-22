@@ -29,6 +29,10 @@
               <p class="text-black-600 text-xl">Description : <%= Questions[i].description %></p>
               <div class="pt-6 pl-4 flex flex-col gap-3">
                 <% for (var j=0; j<options[i].length; j++) { %>
+                  <% if (election.ended) {%>
+                  <% if (optionsCount[i][j]===winners[i]) {%>
+                    <span>->Winner is "<%= options[i][j].option %>" with highest votes <%= optionsCount[i][j] %> </span>
+                          <% }} %>
                    <div class="flex gap-1" >
                   <p class="flex items-center gap-2 text-xl"><%= j+1 %>. <%= options[i][j].option %>: <hr width="<%=optionsCount[i][j]%>5%" style="height:20px; border-radius: 10px; cursor:pointer; background-color:black; display: -webkit-inline-box;" /><p class="text-green-700 text-xl"><%= optionsCount[i][j]%> votes</p></p></div>
                 <% } %>

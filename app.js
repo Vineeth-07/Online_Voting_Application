@@ -847,6 +847,7 @@ app.get(
         const voted = await VoterRel.totalVoted(election.id);
         const notvoted = await VoterRel.totalNotVoted(election.id);
         return res.render("preview-result", {
+          election,
           electionName: election.electionName,
           answers,
           Questions,
@@ -1036,6 +1037,7 @@ app.get("/election/:publicurl/results", async (req, res) => {
       optionsCount.push(opts_count);
     }
     return res.render("results", {
+      election,
       electionName: election.electionName,
       answers,
       Questions,
