@@ -63,6 +63,9 @@
                                     <p class="my-2 text-lg text-black text-bold "><%= voters[i].voterid %></p>
                                 </div>
                                 <div class="flex gap-2 text-black">
+                                    <% if (voters[i].voted) { %>
+                                        <p>Successfully Voted</p>
+                                    <% } else { %>                                       
                                     <div class="rounded w-fit px-2 py-1 flex gap-2 cursor-pointer ">                                                                        
                                         <a href="/<%=election.id%>/<%=voters[i].id%>/edit" class="text-sm text-black">Edit password</a>
                                     </div>
@@ -70,7 +73,7 @@
                                     <div class="rounded w-fit px-2 py-1 flex gap-2 cursor-pointer">                                    
                                         <a onclick="removeVoter(<%= voters[i].id %>,<%=election.id%>)" class="text-sm text-black">Delete voter</a>
                                     </div>
-                                    <% } %>
+                                    <% } }%>
                                 </div>
                             </div>
                         </li>
