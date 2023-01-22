@@ -21,7 +21,7 @@ Admin can create multiple elections.
 
 ## To Run Locally
 
-- Install postgresql and update your username and details in config.json
+- Install postgresql and update your username and password in config.json
 - To start the postgresql server
 
 ```
