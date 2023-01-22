@@ -22,3 +22,10 @@ Admin can create multiple elections.
 ## Screenshots
 
 ![1](https://user-images.githubusercontent.com/112814848/213916221-ec2281dd-00b6-4491-b0ad-614fd2463028.png)
+![2](https://user-images.githubusercontent.com/112814848/213916273-329402c0-9f22-422e-b1a7-a3f3e78d7d91.png)
+![3](https://user-images.githubusercontent.com/112814848/213916274-1358fdb7-2f31-4f88-b923-902ebbaeee1d.png)
+![4](https://user-images.githubusercontent.com/112814848/213916275-d9caec04-61c7-42ca-b2a6-01b411387d0b.png)
+![5](https://user-images.githubusercontent.com/112814848/213916278-b4eb2674-c373-44d4-996d-363c923e5300.png)
+![6](https://user-images.githubusercontent.com/112814848/213916279-ba72d663-4910-4fe6-b869-d426892a17a3.png)
+![7](https://user-images.githubusercontent.com/112814848/213916281-faa873d6-31e3-46b2-a6da-2bde2fb4c861.png)
+![8](https://user-images.githubusercontent.com/112814848/213916282-d09c4734-88fd-4f1c-9727-ac2a2b343c8f.png)
