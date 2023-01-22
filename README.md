@@ -19,6 +19,45 @@ Admin can create multiple elections.
 - Login by using default credentials by admin.
 - After login voter can be able to vote for the question and submit the result.
 
+## To Run Locally
+
+- Install postgresql and update your username and details in config.json
+- To start the postgresql server
+
+```
+sudo service postgresql start
+```
+
+- Install dependencies
+
+```
+npm install
+```
+
+- Create database
+
+```
+npx sequlize-cli db:create
+```
+
+- Migrate database
+
+```
+npx sequlize-cli db:migrate
+```
+
+- Run locally at port 3000
+
+```
+npm start
+```
+
+- Run test cases
+
+```
+npm test
+```
+
 ## Screenshots
 
 ![1](https://user-images.githubusercontent.com/112814848/213916221-ec2281dd-00b6-4491-b0ad-614fd2463028.png)
@@ -29,3 +68,7 @@ Admin can create multiple elections.
 ![6](https://user-images.githubusercontent.com/112814848/213916279-ba72d663-4910-4fe6-b869-d426892a17a3.png)
 ![7](https://user-images.githubusercontent.com/112814848/213916281-faa873d6-31e3-46b2-a6da-2bde2fb4c861.png)
 ![8](https://user-images.githubusercontent.com/112814848/213916282-d09c4734-88fd-4f1c-9727-ac2a2b343c8f.png)
+
+## Live Url
+
+https://vineeth-voting-application.onrender.com
