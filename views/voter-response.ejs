@@ -14,6 +14,14 @@
     <title><%= title %></title>
 </head>
 <body>
+    <nav class="p-6 bg-black">
+        <div class="container flex flex-wrap items-center justify-between mx-auto">
+          <p class="flex items-center">
+            <span class="self-center text-xl font-semibold whitespace-nowrap text-white">Online Voting</span>
+          </p>
+        </div>
+      </nav>
+    <h2 class="text-4xl my-4 "><%= title %></h3>
     <h2 class="text-3xl my-4 ">Vote for below Questions...</h3>
         <form action="/election/<%= publicurl %>" method="post">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
@@ -35,6 +43,7 @@
                     </div>
                 </div>
               <% } %> 
+              <br>
               <button type="submit" class="bg-black rounded w-fit px-2 py-1 hover:bg-black text-white">Submit</button>
           </div>
         </div>
