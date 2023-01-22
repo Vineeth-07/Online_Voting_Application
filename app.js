@@ -230,7 +230,6 @@ app.post("/admin", async (request, response) => {
         console.log(err);
         response.redirect("/");
       } else {
-        request.flash("success", "Signup successfully!");
         response.redirect("/electionpage");
       }
     });
@@ -245,28 +244,25 @@ app.get(
   "/electionpage",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
-    if (req.user.case === "admin") {
-      let uid = await admin.findByPk(req.user.id);
-      let name = uid.dataValues.firstName;
-      try {
-        const listOfElections = await Election.retriveElections(req.user.id);
-        if (req.accepts("html")) {
-          res.render("homepage", {
-            title: "Online Voting Homepage",
-            uid,
-            userName: name,
-            listOfElections,
-            noOfElections: listOfElections.length,
-          });
-        } else {
-          return res.json({ listOfElections });
-        }
-      } catch (error) {
-        console.log(error);
-        return res.status(422).json(error);
+    console.log(req.user.id);
+    let uid = await admin.findByPk(req.user.id);
+    let name = uid.dataValues.firstName;
+    try {
+      const listOfElections = await Election.retriveElections(req.user.id);
+      if (req.accepts("html")) {
+        res.render("homepage", {
+          title: "Online Voting Homepage",
+          uid,
+          userName: name,
+          listOfElections,
+          noOfElections: listOfElections.length,
+        });
+      } else {
+        return res.json({ listOfElections });
       }
-    } else {
-      return res.redirect("/");
+    } catch (error) {
+      console.log(error);
+      return res.status(422).json(error);
     }
   }
 );
@@ -942,6 +938,36 @@ app.get("/:id/end", connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
   } catch (err) {
     console.log(err);
     return res.send(err);
+  }
+});
+
+app.get("/reset", connectEnsureLogin.ensureLoggedIn(), (req, res) => {
+  res.render("edit-admin-password", {
+    title: "Reset password",
+    csrfToken: req.csrfToken(),
+  });
+});
+
+app.post("/reset", connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
+  if (req.body.newPassword.length < 8) {
+    req.flash("error", "Password length should be atleast 8");
+    return res.redirect("/reset");
+  }
+  const hashedNewPwd = await bcrypt.hash(req.body.newPassword, saltRounds);
+  if (await bcrypt.compare(req.body.oldPassword, req.user.password)) {
+    try {
+      admin.findOne({ where: { email: req.user.email } }).then((user) => {
+        user.resetPassword(hashedNewPwd);
+      });
+      req.flash("success", "Password changed successfully");
+      return res.redirect("/electionpage");
+    } catch (error) {
+      console.log(error);
+      return res.status(422).json(error);
+    }
+  } else {
+    req.flash("error", "Old password does not match");
+    return res.redirect("/reset");
   }
 });
 
