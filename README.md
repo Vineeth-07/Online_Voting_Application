@@ -68,7 +68,7 @@ npm test
 ![7](https://user-images.githubusercontent.com/112814848/213916281-faa873d6-31e3-46b2-a6da-2bde2fb4c861.png)
 ![8](https://user-images.githubusercontent.com/112814848/213916282-d09c4734-88fd-4f1c-9727-ac2a2b343c8f.png)
 
-## Live Url
+## Live Application Url
 
 https://vineeth-voting-application.onrender.com
 
