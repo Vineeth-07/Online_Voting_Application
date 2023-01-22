@@ -403,4 +403,29 @@ describe("Voting application test suite", function () {
     });
     expect(result.statusCode).toBe(302);
   });
+
+  test("End election", async () => {
+    const agent = request.agent(server);
+    await login(agent, "vineeth@test.com", "123456789");
+    let res = await agent.get("/electionpage/addelection");
+    let csrfToken = extractCsrfToken(res);
+    await agent.post("/electionpage").send({
+      electionName: "Test election",
+      publicurl: "welcomeUrl",
+      _csrf: csrfToken,
+    });
+    const groupedResponse = await agent
+      .get("/electionpage")
+      .set("Accept", "Application/json");
+    const parsedResponse = JSON.parse(groupedResponse.text);
+    console.log(parsedResponse);
+    const electionCount = parsedResponse.listOfElections.length;
+    const newElection = parsedResponse.listOfElections[electionCount - 1];
+    res = await agent.get(`/electionpage/${newElection.id}`);
+    csrfToken = extractCsrfToken(res);
+    const launchelection = await agent.get(`/${newElection.id}/launch`);
+    expect(launchelection.status).toBe(302);
+    const endelection = await agent.get(`/${newElection.id}/end`);
+    expect(endelection.status).toBe(302);
+  });
 });
