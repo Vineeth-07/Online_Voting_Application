@@ -71,3 +71,7 @@ npm test
 ## Live Url
 
 https://vineeth-voting-application.onrender.com
+
+## Demo Video
+
+https://www.loom.com/share/e04991a1008f44da8ac7f6d9f15f1629
