@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
   <title>
-    <%= electionName %> Preview Result
+    <%= electionName %> Results
   </title>
   <style>
     h3{text-align: center;}
@@ -24,17 +24,17 @@
     <div class="my-6 mx-10 ">
         <h4 class="text-4xl  font-semibold">Questions :</h4>
         <br>
-        <% for(let i=0; i<Questions.length; i++) { %>
-            <h4 class="text-2xl  font-semibold"><%= i+1 %>. <%= Questions[i].questionname %></h4>
-            <h2>Description : <%= Questions[i].description %></h2>
-            <br>
-            <% for(let j=0; j<options[i].length; j++) { %>
-                <% if (optionsCount[i][j]===winners[i]) {%>
-                        <span>Current Winner "<%= options[i][j].option %>" leading with highest votes </span>
-                              <% } %>
-                              <h2 class=" text-lg text-black flex gap-1"> -> <%= options[i][j].option %> got <span class="bg-gray-100 ml-2 px-2"><%= optionsCount[i][j] %></span> votes</h2> 
-                    <% } %>
-            <% } %>
+        <% for (var i=0; i<Questions.length; i++) { %>
+          <div><p class="text-3xl"><%= i+1 %>. <%= Questions[i].questionname %></p>
+           <p class="text-black-600 text-xl">Description : <%= Questions[i].description %></p>
+           <div class="pt-6 pl-4 flex flex-col gap-3">
+             <% for (var j=0; j<options[i].length; j++) { %>
+                <div class="flex gap-1" >
+               <p class="flex items-center gap-2 text-xl"><%= j+1 %>. <%= options[i][j].option %>: <hr width="<%=optionsCount[i][j]%>5%" style="height:20px; border-radius: 10px; cursor:pointer; background-color:black; display: -webkit-inline-box;" /><p class="text-green-700 text-xl"><%= optionsCount[i][j]%> votes</p></p></div>
+             <% } %>
+         </div>
+       </div>
+     <% } %>
     </div>
 </body>
 </html>

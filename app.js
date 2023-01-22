@@ -911,8 +911,6 @@ app.get("/election/:publicurl/results", async (req, res) => {
       optionLabels.push(opts_labels);
       optionsCount.push(opts_count);
     }
-    const voted = await VoterRel.totalVoted(election.id);
-    const notvoted = await VoterRel.totalNotVoted(election.id);
     return res.render("results", {
       electionName: election.electionName,
       answers,
@@ -921,9 +919,6 @@ app.get("/election/:publicurl/results", async (req, res) => {
       options,
       optionsCount,
       optionLabels,
-      voted,
-      notvoted,
-      totalVoters: voted + notvoted,
     });
   } catch (err) {
     console.log(err);
