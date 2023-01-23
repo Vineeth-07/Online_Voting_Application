@@ -33,7 +33,7 @@
                   <span>->Winner is "<%= options[i][j].option %>" with highest votes <%= optionsCount[i][j] %></span>
                         <% }%>
                 <div class="flex gap-1" >
-               <p class="flex items-center gap-2 text-xl"><%= j+1 %>. <%= options[i][j].option %>: <hr width="<%=optionsCount[i][j]%>5%" style="height:20px; border-radius: 10px; cursor:pointer; background-color:black; display: -webkit-inline-box;" /><p class="text-green-700 text-xl"><%= optionsCount[i][j]%> votes</p></p></div>
+               <p class="flex items-center gap-2 text-xl"><%= j+1 %>. <%= options[i][j].option %>: <hr width="<%=optionsCount[i][j]%>5%" style="height:30px; border:none; color:blue; background-color:blue;" /><p class="text-green-700 text-xl"><%= optionsCount[i][j]%> votes</p></p></div>
              <% } %>
          </div>
        </div>
