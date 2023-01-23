@@ -65,7 +65,7 @@ npm test
 ![4](https://user-images.githubusercontent.com/112814848/213916275-d9caec04-61c7-42ca-b2a6-01b411387d0b.png)
 ![5](https://user-images.githubusercontent.com/112814848/213916278-b4eb2674-c373-44d4-996d-363c923e5300.png)
 ![6](https://user-images.githubusercontent.com/112814848/213916279-ba72d663-4910-4fe6-b869-d426892a17a3.png)
-![7](https://user-images.githubusercontent.com/112814848/213916281-faa873d6-31e3-46b2-a6da-2bde2fb4c861.png)
+![7](https://user-images.githubusercontent.com/112814848/213951864-0e02a960-e1ae-4a66-8ee9-636be568a98e.png)
 ![8](https://user-images.githubusercontent.com/112814848/213916282-d09c4734-88fd-4f1c-9727-ac2a2b343c8f.png)
 
 ## Live Application Url
