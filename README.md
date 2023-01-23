@@ -8,8 +8,7 @@ It is an Online Voting Application built by using Node.js , it consists of two u
 - Admin can create multiple elections.
 - Each election consist of multiple questions.
 - Admin adds the voters by giving voter ID and password.
-- After creating questions and voters, admin can launch the election and it provides publicURL where voters can vote
-- through using publicURL.
+- After creating questions and voters, admin can launch the election and it provides publicURL where voters can vote through using publicURL.
 - At last admin ends the election and checks the results.
 
 ## 2)Voter
