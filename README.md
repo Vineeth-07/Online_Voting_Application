@@ -14,8 +14,8 @@ It is an Online Voting Application built by using Node.js , it consists of two u
 ## 2)Voter
 
 - Voter visits the publicURL given by the admin.
-- Login by using default credentials by admin.
-- After login voter can be able to vote for the question and submit the result.
+- Login by using default credentials provided by admin.
+- After login voter can be able to vote for the questions and submits the result.
 
 ## To Run Locally
 
